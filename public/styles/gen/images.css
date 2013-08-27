@@ -1,0 +1,48 @@
+#panel-images {
+  margin: 3px;
+  background-color: #333;
+}
+#panel-images .header.dragging {
+  background-color: blue;
+}
+#panel-images .image {
+  background-color: rgba(255, 255, 255, 0.05);
+  height: 120px;
+  display: inline-block;
+  position: relative;
+  margin: 10px;
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+#panel-images .image:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+#panel-images .image p {
+  border-top: 1px solid rgba(0, 0, 0, 0.25);
+  font-size: .7em;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 4px;
+  overflow: hidden;
+  height: 1.7em;
+  margin-bottom: 0px;
+}
+#panel-images .image .framed-image {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+#panel-images .image .framed-image img {
+  max-width: 90px;
+  max-height: 90px;
+}

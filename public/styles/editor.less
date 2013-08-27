@@ -1,0 +1,358 @@
+
+//Function
+.selectNone() {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.rounded-corners (@radius: 5px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -ms-border-radius: @radius;
+  -o-border-radius: @radius;
+  border-radius: @radius;
+}
+
+body, #app, #body {
+  background-color: #333;
+  font-family: 'Open Sans', sans-serif;
+}
+
+#body {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+@gradient: linear-gradient(to bottom,#444,#222);
+
+#menu {
+
+  .selectNone();
+  cursor: pointer;
+
+  background-image: @gradient;
+
+  > ul {
+
+    @normalColor: #c6c6c6;
+
+    display: inline-block;
+
+    margin-bottom: 0px;
+    margin-left:5px;
+
+    a {
+      text-decoration: none;
+      color: black;
+      padding: 3px 0 3px 0;
+    }
+
+    > li {
+      display: inline-block;
+      position: relative;
+
+      > a {
+        display: inline-block;
+        padding: 5px 10px 5px 10px;
+        color: @normalColor;
+      }
+    }
+
+
+    li > ul {
+      display:none;
+      position: absolute;
+      top: 30px;
+      left: 5px;
+      background-color: white;
+      color: black;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+
+      a {
+        min-width: 150px;
+        display: inline-block;
+        padding-left: 20px;
+      }
+    }
+
+    &.focused {
+
+      li:hover {
+        background-color: #eee;
+
+        > ul {
+          display:block;
+          margin-left: 0px;
+          z-index: 99999;
+        }
+      }
+
+      li.top-level:hover {
+        background-color: black;
+
+        > a {
+          color: white;
+        }
+      }
+    }
+
+    li {
+      list-style: none;
+      list-style-image: none;
+    }
+  }
+
+}
+
+#app {
+  position: absolute;
+  top: 30px;
+  bottom: 25px;
+  left: 5px;
+  right: 5px;
+
+  > div {
+    position: absolute;
+    left:0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+  }
+}
+
+#status {
+  background-image: @gradient;
+  position: absolute;
+  bottom: 0px;
+  left:0px;
+  right: 0px;
+  height: 25px;
+}
+
+#primary-panel {
+
+  &.hidden {
+    display: none;
+  }
+
+  min-width: 600px;
+  min-height: 600px;
+
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: black;
+  z-index: 1000;
+
+  > div.panel-container {
+    border: 1px solid #666;
+    background-color: #333;
+    position: absolute;
+    @gap: 2em;
+    right: @gap;
+    left: @gap;
+    top: @gap;
+    bottom: @gap;
+
+    .rounded-corners(3px);
+
+    > div.panel {
+
+      @headerHeight: 7em;
+      @footerHeight: 3.5em;
+
+      position: relative;
+
+      display: table;
+      height: 100%;
+      width: 100%;
+      table-layout: fixed;
+
+      > div {
+        left: 0px;
+        right: 0px;
+        position: absolute;
+        padding: 1em;
+
+      }
+
+      > div.header {
+        top: 0px;
+        display: table-row;
+        height: @headerHeight;
+
+        border-bottom: 1px solid #ddd;
+        padding: .1em 1em;
+      }
+
+      > div.body {
+        top: (@headerHeight + .3em);
+        bottom: (@footerHeight + .3em);
+
+        height: auto;
+        display: table-row;
+
+        overflow: auto;
+      }
+
+      > div.footer {
+
+        position: absolute;
+
+        bottom: 0px;
+        height: @footerHeight;
+
+        background-color: rgba(255, 255, 255, .25);
+        text-align: right;
+        vertical-align: middle;
+
+        border-top: 1px solid #ddd;
+        padding: .1em 1em;
+
+        .btn {
+          margin: 6px 5px;
+          min-width: 80px;
+          margin-top: 10px;
+        }
+      }
+    }
+
+
+  }
+}
+
+.md-editor {
+  .editor, .preview {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: 3px;
+    border: 1px solid #666;
+  }
+
+  .preview {
+    overflow: auto;
+    background-color: white;
+    padding: 5px;
+
+    iframe {
+      width:99%;
+      height: 99%;
+      border:none !important;
+    }
+  }
+}
+
+#app.mode-editAndPreview {
+
+  .md-editor {
+    display: block;
+  }
+
+  .images {
+    display: none;
+  }
+
+  .md-editor .editor {
+    right: 50%;
+    left: 0;
+  }
+
+  .md-editor .preview {
+    left: 50%;
+    right: 0;
+  }
+}
+
+#app.mode-editOnly {
+
+  .md-editor {
+    display: block;
+  }
+
+  .images {
+    display: none;
+  }
+
+  .md-editor .editor {
+    right: 0;
+    left: 0;
+  }
+
+  .md-editor .preview {
+    display:none;
+    left: 0;
+    right: 0;
+  }
+}
+
+#app.mode-images {
+
+  .md-editor {
+    display: none;
+    visibility: hidden;
+  }
+
+  .images {
+    display: block;
+  }
+}
+
+#document-loader {
+  display: none;
+}
+
+/* Make sure the ace markdownEditor is always expanded fully */
+.editor .md-ace-editor {
+  position: absolute;
+  left:0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+#download-document {
+  background-color: #2f2f2f;
+
+  @height: 200px;
+  @width: 400px;
+
+  label, input {
+    display: inline-block;
+  }
+
+  input {
+    position: relative;
+    top: 3px;
+    text-align: right;
+  }
+}
+
+body {
+  #drag-fileLoad {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+    z-index: 2500;
+    background-color: rgba(0,0,0,.9);
+    display: none;
+  }
+
+}
+
+body.drag #drag-fileLoad {
+  display: block;
+}
+
+@import "images";
