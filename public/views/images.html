@@ -1,0 +1,22 @@
+
+<div class="panel" id="panel-images">
+  <div class="header">
+    <h2>Images</h2>
+    <p>
+      Add images by dragging them into the panel.  Select an image to edit or remove it.
+    </p>
+  </div>
+  <div class="body" ng-controller="EMD.Editor.ImagesController" id="image_drop_zone">
+    <div class='images-container'>
+      <div class='image' ng-repeat="image in document.images">
+        <div class='framed-image'>
+          <img ng-src="{{image.data}}" ng-alt="{{image.name}}" draggable="false"/>
+        </div>
+        <p>{{image.name}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <a href="#" class="btn btn-primary">Done</a>
+  </div>
+</div>
