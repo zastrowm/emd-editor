@@ -1,3 +1,187 @@
+var EMD;
+(function (EMD) {
+    ///<reference path="../def/ace.d.ts" />
+    ///<reference path="../def/angular.d.ts" />
+    (function (Editor) {
+        Editor.emdEditorModule = angular.module('EMD.Editor.App', ['ui.state']);
+
+        Editor.emdEditorModule.factory('editors', function () {
+            var EditorsService = {
+                markdownEditor: $('#core-editor').data('editor')
+            };
+
+            return EditorsService;
+        });
+
+        Editor.emdEditorModule.factory('actions', function ($state) {
+            var ActionsService = {
+                go: function (actionName, toParams) {
+                    if (typeof toParams === "undefined") { toParams = {}; }
+                    $state.transitionTo(actionName, toParams, {
+                        location: true,
+                        inherit: true,
+                        relative: $state.$current
+                    });
+                }
+            };
+
+            return ActionsService;
+        });
+
+        Editor.emdEditorModule.config(function ($stateProvider, $urlRouterProvider) {
+            //
+            // For any unmatched url, send to /
+            $urlRouterProvider.otherwise("");
+
+            //
+            // Now set up the states
+            var state = $stateProvider;
+
+            state = state.state('edit', {
+                url: '',
+                template: ""
+            });
+
+            state = state.state('images', {
+                url: "/images",
+                templateUrl: "views/images.html"
+            });
+
+            state = state.state('images.edit', {
+                url: "/edit/:id",
+                templateUrl: "views/images.html"
+            });
+        });
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
+var EMD;
+(function (EMD) {
+    ///<reference path="../../def/angular.d.ts" />
+    ///<reference path="../../def/angular.d.ts" />
+    ///<reference path="../Config.ts" />
+    (function (Editor) {
+        Editor.emdEditorModule.directive("dropzone", function ($parse) {
+            var dropzone = {
+                restrict: "A",
+                /**
+                * Link the element to its functionality
+                * @param $scope the current scope of the element
+                * @param $element the element that is being hooked up
+                * @param $attributes the atttributes for the element
+                */
+                link: function ($scope, $element, $attributes) {
+                    // create a function from the "onfiledrop" attribute
+                    var ondrop = $parse($attributes.onfiledrop);
+
+                    // on drop, call the ondrop method with the files
+                    $element.bind('drop', function (evt) {
+                        // jquery event
+                        evt.stopPropagation();
+                        evt.preventDefault();
+
+                        // convert it to the natural event
+                        evt = (evt.originalEvent);
+
+                        if (evt.dataTransfer != null && evt.dataTransfer.files != null && evt.dataTransfer.files.length > 0) {
+                            var files = evt.dataTransfer.files;
+                            ondrop($scope, { files: files });
+                        }
+                    });
+                }
+            };
+
+            return dropzone;
+        });
+
+        /*
+        Have dragdrop for the entire app setup (this allows file drops to not
+        cause the UI to change
+        */
+        $(function () {
+            var dropZone = document.getElementsByTagName("body")[0];
+            dropZone.addEventListener('dragover', function (evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+            }, false);
+            dropZone.addEventListener('drop', function (evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                console.log(evt.target);
+            }, false);
+        });
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var EMD;
+(function (EMD) {
+    ///<reference path="../../def/angular.d.ts" />
+    ///<reference path="../../def/angular.d.ts" />
+    ///<reference path="../Config.ts" />
+    (function (Editor) {
+        Editor.emdEditorModule.directive('appPanel', function () {
+            return new PanelDirective();
+        });
+        Editor.emdEditorModule.directive('panelHeader', function () {
+            return new PanelHeaderDirective();
+        });
+        Editor.emdEditorModule.directive('panelBody', function () {
+            return new PanelBodyDirective();
+        });
+        Editor.emdEditorModule.directive('panelFooter', function () {
+            return new PanelFooterDirective();
+        });
+
+        var PanelDirective = (function () {
+            function PanelDirective() {
+                this.restrict = 'A';
+            }
+            return PanelDirective;
+        })();
+
+        var ReplacementDirective = (function () {
+            function ReplacementDirective(template) {
+                this.template = template;
+                this.require = '^appPanel';
+                this.restrict = 'E';
+                this.transclude = true;
+                this.replace = true;
+            }
+            return ReplacementDirective;
+        })();
+
+        var PanelHeaderDirective = (function (_super) {
+            __extends(PanelHeaderDirective, _super);
+            function PanelHeaderDirective() {
+                _super.call(this, "<div class='header'>" + "<div class='content' ng-transclude></div>" + "</div>");
+            }
+            return PanelHeaderDirective;
+        })(ReplacementDirective);
+
+        var PanelBodyDirective = (function (_super) {
+            __extends(PanelBodyDirective, _super);
+            function PanelBodyDirective() {
+                _super.call(this, "<div class='body'>" + "<div class='content' ng-transclude></div>" + "</div>");
+            }
+            return PanelBodyDirective;
+        })(ReplacementDirective);
+
+        var PanelFooterDirective = (function (_super) {
+            __extends(PanelFooterDirective, _super);
+            function PanelFooterDirective() {
+                _super.call(this, "<div class='footer'>" + "<div class='content' ng-transclude></div>" + "</div>");
+            }
+            return PanelFooterDirective;
+        })(ReplacementDirective);
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
 /**
 * Embedded Markdown Document interface
 */
@@ -224,6 +408,135 @@ var EMD;
         return Image;
     })();
     EMD.Image = Image;
+
+    /**
+    * A collection of items that have a name and can be retrieved by their name
+    */
+    var NamedList = (function () {
+        /**
+        * Create a new named list
+        * @param isCaseSensitive whether the names of the items are case sensitive
+        */
+        function NamedList(isCaseSensitive, items) {
+            if (typeof isCaseSensitive === "undefined") { isCaseSensitive = false; }
+            if (typeof items === "undefined") { items = []; }
+            this.isCaseSensitive = isCaseSensitive;
+            this.items = items;
+            if (this.items == null) {
+                this.items = [];
+            }
+            this.hash = {};
+        }
+        /**
+        * Add a new item to the collection
+        * @param item the item to add to the collection
+        * @returns {*} the item that was added to the collection
+        */
+        NamedList.prototype.add = function (item) {
+            if (this.contains(item.name)) {
+                throw new Error("Collection already contains item with that name");
+            }
+
+            // add it to the item array and add it to the hash list
+            this.items.push(item);
+            this.hash[this.formatName(item.name)] = item;
+
+            return item;
+        };
+
+        /**
+        * Remove the item from the collection
+        * @param item the item to remove from the collection
+        * @returns {*} the item that was removed, or null if the item did not exist
+        * in the collection
+        * @remarks differs from removeByName as it does a reference lookup rather than
+        * a name lookup
+        */
+        NamedList.prototype.remove = function (item) {
+            var name = this.formatName(item.name);
+
+            if (this.contains(name)) {
+                for (var i = 0; i < this.items.length; i++) {
+                    if (this.items[i] == item) {
+                        // found it!
+                        return this.removeAtIndex(i, name);
+                    }
+                }
+            }
+
+            return null;
+        };
+
+        /**
+        * Remove an item by its name
+        * @param name the name of the item to remove from the collection
+        * @returns {*} the item that was removed, or null if the item did not exist
+        * in the collection
+        */
+        NamedList.prototype.removeByName = function (name) {
+            name = this.formatName(name);
+
+            if (this.contains(name)) {
+                for (var i = 0; i < this.items.length; i++) {
+                    var item = this.items[i];
+                    if (item.name == name) {
+                        // found it!
+                        return this.removeAtIndex(i, name);
+                    }
+                }
+            }
+
+            return null;
+        };
+
+        /**
+        * Remove the designated item at the specified index
+        * @param i the index at which to remove
+        * @param name the name of the item in the hashmap to remove
+        * @returns {*} the item that was removed
+        */
+        NamedList.prototype.removeAtIndex = function (i, name) {
+            var item = this.items.splice(i)[0];
+            delete this.hash[name];
+            return item;
+        };
+
+        /**
+        * Check if an item with the designated name exists
+        * @param name the name of the item to check for existence of
+        * @returns {*} true if the item is contained in the list
+        */
+        NamedList.prototype.contains = function (name) {
+            name = this.formatName(name);
+
+            return this.hash.hasOwnProperty(name);
+        };
+
+        /**
+        * Get the item associated with the name
+        * @param name the name of the item to retrieve
+        * @returns {*} the item associated with the name
+        */
+        NamedList.prototype.get = function (name) {
+            var name = this.formatName(name);
+            return this.contains(name) ? this.hash[name] : null;
+        };
+
+        /**
+        * Convert the name to lowercase if needed
+        * @param name the name to convert
+        * @returns {string} the name, lowercased if needed, otherwise the original name
+        */
+        NamedList.prototype.formatName = function (name) {
+            if (!this.isCaseSensitive) {
+                return name.toLowerCase();
+            }
+
+            return name;
+        };
+        return NamedList;
+    })();
+    EMD.NamedList = NamedList;
 
     /**
     * A doc-markdown document class containing all of the elements for the document
@@ -675,43 +988,6 @@ var Utils;
 })(Utils || (Utils = {}));
 var EMD;
 (function (EMD) {
-    ///<reference path="../def/ace.d.ts" />
-    ///<reference path="../def/angular.d.ts" />
-    (function (Editor) {
-        var emdEditorModule = angular.module('EMD.Editor.App', ['ui.state']);
-
-        emdEditorModule.factory('editors', function () {
-            var EditorsService = {
-                markdownEditor: $('#core-editor').data('editor')
-            };
-
-            return EditorsService;
-        });
-
-        emdEditorModule.config(function ($stateProvider, $urlRouterProvider) {
-            //
-            // For any unmatched url, send to /
-            $urlRouterProvider.otherwise("");
-
-            //
-            // Now set up the states
-            var state = $stateProvider;
-
-            state = state.state('edit', {
-                url: '',
-                template: ""
-            });
-
-            state = state.state('images', {
-                url: "/images",
-                templateUrl: "views/images.html"
-            });
-        });
-    })(EMD.Editor || (EMD.Editor = {}));
-    var Editor = EMD.Editor;
-})(EMD || (EMD = {}));
-var EMD;
-(function (EMD) {
     ///<reference path="../EmdDocument.ts"/>
     ///<reference path="../MarkdownConverter.ts" />
     ///<reference path="../MarkdownEditor.ts" />
@@ -832,52 +1108,6 @@ var EMD;
     })(EMD.Editor || (EMD.Editor = {}));
     var Editor = EMD.Editor;
 })(EMD || (EMD = {}));
-///<reference path="../../def/jquery.d.ts" />
-var EMD;
-(function (EMD) {
-    (function (Editor) {
-        /**
-        * Controls the download UI
-        */
-        var DownloadController = (function () {
-            function DownloadController($scope) {
-                var _this = this;
-                this.scope = $scope;
-
-                $scope.$on('download', function (evt, data) {
-                    return _this.handleDownload(data);
-                });
-                $scope.filename = "document";
-                $scope.handleAfterDownload = function () {
-                    return _this.handleAfterDownload();
-                };
-
-                $('#download-document').on('shown', function () {
-                    $('#download-document input').focus();
-                });
-            }
-            DownloadController.prototype.handleDownload = function (data) {
-                this.scope.isHidden = false;
-                $('#download-link').attr('href', data.downloadData);
-
-                this.promptDownload(true);
-            };
-
-            DownloadController.prototype.handleAfterDownload = function () {
-                this.promptDownload(false);
-            };
-
-            DownloadController.prototype.promptDownload = function (show) {
-                var opt = show ? 'show' : 'hide';
-
-                $('#download-document').modal(opt);
-            };
-            return DownloadController;
-        })();
-        Editor.DownloadController = DownloadController;
-    })(EMD.Editor || (EMD.Editor = {}));
-    var Editor = EMD.Editor;
-})(EMD || (EMD = {}));
 var EMD;
 (function (EMD) {
     ///<reference path="AppController.ts" />
@@ -892,36 +1122,17 @@ var EMD;
             * Create a new menu controller
             * @param $scope the scope for which the controller is active
             */
-            function ImagesController($scope) {
-                var _this = this;
+            function ImagesController($scope, actions) {
+                this.actions = actions;
                 this.appController = ($scope.$parent).controller;
 
-                $scope.handleFileChanged = function (element) {
-                    return _this.handleFileChanged(element);
-                };
-
-                // Setup the dnd listeners.
-                var dropZone = document.getElementById('image_drop_zone');
-                dropZone.addEventListener('dragover', function (evt) {
-                    return _this.handleElementHover(evt);
-                }, false);
-                dropZone.addEventListener('drop', function (evt) {
-                    return _this.handleFileSelect(evt);
-                }, false);
+                $scope.controller = this;
             }
-            ImagesController.prototype.handleElementHover = function (evt) {
-                evt.stopPropagation();
-                evt.preventDefault();
-
-                evt.dataTransfer.dropEffect = 'copy';
+            ImagesController.prototype.handleImageClick = function (image) {
+                this.actions.go("images.edit", { id: image.name });
             };
 
-            ImagesController.prototype.handleFileSelect = function (evt) {
-                evt.stopPropagation();
-                evt.preventDefault();
-
-                var files = evt.dataTransfer.files;
-
+            ImagesController.prototype.handleFileSelect = function (files) {
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     if (file.type.indexOf('image/') !== 0)
@@ -993,6 +1204,12 @@ var EMD;
                 }
             };
 
+            /**
+            * Convert a blob to a base64 string
+            * @param blob the blob to convert
+            * @param callback the callback that gets executed with the first argument
+            * containing the converted base64 string
+            */
             ImagesController.prototype.convertBlockToBase64 = function (blob, callback) {
                 var reader = new FileReader();
                 reader.onload = function () {
@@ -1005,6 +1222,52 @@ var EMD;
             return ImagesController;
         })();
         Editor.ImagesController = ImagesController;
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
+///<reference path="../../def/jquery.d.ts" />
+var EMD;
+(function (EMD) {
+    (function (Editor) {
+        /**
+        * Controls the download UI
+        */
+        var DownloadController = (function () {
+            function DownloadController($scope) {
+                var _this = this;
+                this.scope = $scope;
+
+                $scope.$on('download', function (evt, data) {
+                    return _this.handleDownload(data);
+                });
+                $scope.filename = "document";
+                $scope.handleAfterDownload = function () {
+                    return _this.handleAfterDownload();
+                };
+
+                $('#download-document').on('shown', function () {
+                    $('#download-document input').focus();
+                });
+            }
+            DownloadController.prototype.handleDownload = function (data) {
+                this.scope.isHidden = false;
+                $('#download-link').attr('href', data.downloadData);
+
+                this.promptDownload(true);
+            };
+
+            DownloadController.prototype.handleAfterDownload = function () {
+                this.promptDownload(false);
+            };
+
+            DownloadController.prototype.promptDownload = function (show) {
+                var opt = show ? 'show' : 'hide';
+
+                $('#download-document').modal(opt);
+            };
+            return DownloadController;
+        })();
+        Editor.DownloadController = DownloadController;
     })(EMD.Editor || (EMD.Editor = {}));
     var Editor = EMD.Editor;
 })(EMD || (EMD = {}));

@@ -240,8 +240,144 @@ module EMD
      * @param imageData the data associated with the image
      * @param comment a comment describing the image
      */
-        constructor(public name: string,  public data: string) {
+    constructor(public name: string,  public data: string) {
 
+    }
+  }
+
+  export interface IHaveName {
+    name: string;
+  }
+
+  /**
+   * A collection of items that have a name and can be retrieved by their name
+   */
+  export class NamedList<T extends IHaveName> {
+
+    private hash: any;
+
+    /**
+     * Create a new named list
+     * @param isCaseSensitive whether the names of the items are case sensitive
+     */
+    constructor(public isCaseSensitive: boolean = false, public items: T[] = []) {
+      if (this.items == null) {
+        this.items = [];
+      }
+      this.hash = {};
+    }
+
+    /**
+     * Add a new item to the collection
+     * @param item the item to add to the collection
+     * @returns {*} the item that was added to the collection
+     */
+    public add(item: T): T {
+
+      if (this.contains(item.name)) {
+        throw new Error("Collection already contains item with that name");
+      }
+
+      // add it to the item array and add it to the hash list
+      this.items.push(item);
+      this.hash[this.formatName(item.name)] = item;
+
+      return item;
+    }
+
+    /**
+     * Remove the item from the collection
+     * @param item the item to remove from the collection
+     * @returns {*} the item that was removed, or null if the item did not exist
+     * in the collection
+     * @remarks differs from removeByName as it does a reference lookup rather than
+     * a name lookup
+     */
+    public remove(item: T): T {
+      var name = this.formatName(item.name);
+
+      // hash checking should be fast
+      if (this.contains(name))
+      {
+        for (var i = 0; i < this.items.length; i++) {
+          if (this.items[i] == item) {
+            // found it!
+            return this.removeAtIndex(i, name);
+          }
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Remove an item by its name
+     * @param name the name of the item to remove from the collection
+     * @returns {*} the item that was removed, or null if the item did not exist
+     * in the collection
+     */
+    public removeByName(name: string): T {
+      name = this.formatName(name);
+
+      // hash checking should be fast
+      if (this.contains(name))
+      {
+        for (var i = 0; i < this.items.length; i++) {
+          var item = <IHaveName>this.items[i];
+          if (item.name == name) {
+            // found it!
+            return this.removeAtIndex(i, name);
+          }
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Remove the designated item at the specified index
+     * @param i the index at which to remove
+     * @param name the name of the item in the hashmap to remove
+     * @returns {*} the item that was removed
+     */
+    private removeAtIndex(i: number, name: string): T {
+      var item = this.items.splice(i)[0];
+      delete this.hash[name];
+      return item;
+    }
+
+    /**
+     * Check if an item with the designated name exists
+     * @param name the name of the item to check for existence of
+     * @returns {*} true if the item is contained in the list
+     */
+    public contains(name: string): boolean {
+      name = this.formatName(name);
+
+      return this.hash.hasOwnProperty(name);
+    }
+
+    /**
+     * Get the item associated with the name
+     * @param name the name of the item to retrieve
+     * @returns {*} the item associated with the name
+     */
+    public get(name: string): T {
+      var name = this.formatName(name);
+      return this.contains(name) ? this.hash[name] : null;
+    }
+
+    /**
+     * Convert the name to lowercase if needed
+     * @param name the name to convert
+     * @returns {string} the name, lowercased if needed, otherwise the original name
+     */
+    private formatName(name: string): string {
+      if (!this.isCaseSensitive) {
+        return name.toLowerCase();
+      }
+
+      return name;
     }
   }
 
@@ -319,7 +455,7 @@ module EMD
      * Remove an image from the list
      * @param image the image to remove
      */
-        removeImage(image: Image) {
+    removeImage(image: Image) {
       if (this.images == null)
         return;
 
@@ -335,7 +471,7 @@ module EMD
      * Add an image to the list
      * @param image the image to add to the list
      */
-        addImage(image: Image) {
+    addImage(image: Image) {
       if (this.images == null)
         this.images = [];
 
@@ -346,7 +482,7 @@ module EMD
      * Check if the document contains an image with the specified name
      * @param name the name to check if it already exists on an image
      */
-        containsImageWithName(name: string): boolean {
+   containsImageWithName(name: string): boolean {
       if (this.images == null)
         return false
 
@@ -363,7 +499,7 @@ module EMD
      * Get the image associated withe the name
      * @param name the name of the image to retrieve
      */
-        getImage(name: string): EMD.Image {
+   getImage(name: string): EMD.Image {
       for (var i = 0; i < this.images.length; i++) {
         var image = this.images[i];
         if (image.name == name) {

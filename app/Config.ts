@@ -4,7 +4,7 @@
 
 module EMD.Editor {
 
-  var emdEditorModule = angular.module('EMD.Editor.App', ['ui.state']);
+  export var emdEditorModule = angular.module('EMD.Editor.App', ['ui.state']);
 
   emdEditorModule.factory('editors', function() {
     var EditorsService = {
@@ -12,6 +12,26 @@ module EMD.Editor {
     };
 
     return EditorsService;
+  });
+
+  emdEditorModule.factory('actions', function($state) {
+
+    var ActionsService = {
+
+      go: function(actionName: string, toParams:any = {}) {
+
+        $state.transitionTo(actionName, toParams,
+            {
+              location: true,
+              inherit: true,
+              relative: $state.$current
+            });
+
+      }
+
+    };
+
+    return ActionsService;
   });
 
 
@@ -32,5 +52,17 @@ module EMD.Editor {
       url: "/images",
       templateUrl: "views/images.html"
     });
+
+    state = state.state('images.edit', {
+      url: "/edit/:id",
+      templateUrl: "views/images.html"
+    });
   })
+
+
+
+
+
+
 }
+
