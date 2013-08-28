@@ -1,22 +1,28 @@
 
-<div class="panel" id="panel-images">
-  <div class="header">
+<div x-app-panel class="panel"  id="panel-images"  ng-controller="EMD.Editor.ImagesController">
+  <panel-header>
     <h2>Images</h2>
     <p>
       Add images by dragging them into the panel.  Select an image to edit or remove it.
     </p>
-  </div>
-  <div class="body" ng-controller="EMD.Editor.ImagesController" id="image_drop_zone">
-    <div class='images-container'>
-      <div class='image' ng-repeat="image in document.images">
+  </panel-header>
+  <panel-body>
+    <div class='images-container' id="image_drop_zone"
+         dropzone
+         onfiledrop="controller.handleFileSelect(files)">
+      <div
+          class='image'
+          ng-repeat="image in document.images"
+          ng-click="controller.handleImageClick(image)">
         <div class='framed-image'>
           <img ng-src="{{image.data}}" ng-alt="{{image.name}}" draggable="false"/>
         </div>
         <p>{{image.name}}</p>
       </div>
     </div>
-  </div>
-  <div class="footer">
+  </panel-body>
+  <panel-footer>
     <a href="#" class="btn btn-primary">Done</a>
-  </div>
+  </panel-footer>
 </div>
+

@@ -46,3 +46,7 @@
   max-width: 90px;
   max-height: 90px;
 }
+#panel-images .images-container {
+  width: 100%;
+  height: 100%;
+}

@@ -1,7 +1,3 @@
 --sourcemap
-controllers/AppController.ts
-controllers/DownloadController.ts
-controllers/ImagesController.ts
-controllers/MenuController.ts
-
---out ../public/scripts/gen/App.js
+zApp.ts
+--out ../public/scripts/App.js

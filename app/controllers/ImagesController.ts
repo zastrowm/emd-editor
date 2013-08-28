@@ -1,5 +1,4 @@
 ///<reference path="AppController.ts" />
-
 ///<reference path="../EmdDocument.ts" />
 ///<reference path="../../def/jquery.d.ts" />
 
@@ -16,31 +15,17 @@ module EMD.Editor {
      * Create a new menu controller
      * @param $scope the scope for which the controller is active
      */
-    constructor($scope: any) {
+    constructor($scope: any, private actions) {
       this.appController = <AppController>(<any>$scope.$parent).controller;
 
-      $scope.handleFileChanged = (element) => this.handleFileChanged(element);
-
-      // Setup the dnd listeners.
-      var dropZone = document.getElementById('image_drop_zone');
-      dropZone.addEventListener('dragover', evt => this.handleElementHover(evt), false);
-      dropZone.addEventListener('drop', evt => this.handleFileSelect(evt), false);
-
+      $scope.controller = this;
     }
 
-    private handleElementHover(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-
-      evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    private handleImageClick(image: EMD.Image) {
+      this.actions.go("images.edit", {id: image.name});
     }
 
-    private handleFileSelect(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-
-      var files = evt.dataTransfer.files;
-
+    public handleFileSelect(files: FileList) {
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
         if (file.type.indexOf('image/') !== 0)
@@ -97,7 +82,7 @@ module EMD.Editor {
       var newImage = new EMD.Image(filename, "data:image/" + extension + ";base64," + data);
 
 
-      // refresh the image list
+    // refresh the image list
       document.addImage(newImage);
       this.appController.refreshImages();
     }
@@ -115,6 +100,12 @@ module EMD.Editor {
       }
     }
 
+    /**
+     * Convert a blob to a base64 string
+     * @param blob the blob to convert
+     * @param callback the callback that gets executed with the first argument
+     * containing the converted base64 string
+     */
     private convertBlockToBase64(blob, callback) {
       var reader = new FileReader();
       reader.onload = () => {
