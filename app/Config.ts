@@ -55,7 +55,7 @@ module EMD.Editor {
 
     state = state.state('images.edit', {
       url: "/edit/:id",
-      templateUrl: "views/images.html"
+      templateUrl: "views/images.edit.html"
     });
   })
 

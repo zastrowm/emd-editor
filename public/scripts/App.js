@@ -49,7 +49,7 @@ var EMD;
 
             state = state.state('images.edit', {
                 url: "/edit/:id",
-                templateUrl: "views/images.html"
+                templateUrl: "views/images.edit.html"
             });
         });
     })(EMD.Editor || (EMD.Editor = {}));
@@ -1000,11 +1000,136 @@ var Utils;
 })(Utils || (Utils = {}));
 var EMD;
 (function (EMD) {
+    (function (Editor) {
+        (function (Files) {
+            (function (FileSystemSupport) {
+                FileSystemSupport[FileSystemSupport["FileRename"] = 0] = "FileRename";
+                FileSystemSupport[FileSystemSupport["FileDelete"] = 1] = "FileDelete";
+                FileSystemSupport[FileSystemSupport["CreateDirectory"] = 2] = "CreateDirectory";
+            })(Files.FileSystemSupport || (Files.FileSystemSupport = {}));
+            var FileSystemSupport = Files.FileSystemSupport;
+        })(Editor.Files || (Editor.Files = {}));
+        var Files = Editor.Files;
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
+var EMD;
+(function (EMD) {
+    (function (Editor) {
+        (function (Files) {
+            ///<reference path="Filesystem.ts" />
+            (function (LocalStorage) {
+                var fs = EMD.Editor.Files;
+
+                var FileSystem = (function () {
+                    function FileSystem() {
+                        this.name = "/";
+                    }
+                    /**
+                    * Constructor
+                    */
+                    FileSystem.prototype.constructor = function () {
+                    };
+
+                    FileSystem.prototype.supports = function (feature) {
+                        switch (feature) {
+                            case fs.FileSystemSupport.CreateDirectory:
+                                return false;
+                            case fs.FileSystemSupport.FileDelete:
+                                return true;
+                            case fs.FileSystemSupport.FileRename:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    };
+
+                    FileSystem.prototype.isValidFilename = function (fileName) {
+                        return /^[a-z0-9 \-\._]+$/i.test(fileName);
+                    };
+
+                    FileSystem.prototype.getRootDirectory = function () {
+                        return this;
+                    };
+
+                    /**
+                    * No other directories
+                    */
+                    FileSystem.prototype.getDirectories = function () {
+                        return [];
+                    };
+
+                    FileSystem.prototype.getFiles = function () {
+                        var files = [];
+
+                        for (var i = 0; i < localStorage.length; i++) {
+                            var key = localStorage.key(i);
+                            if (key.indexOf(FileSystem.filePrefix) == 0) {
+                                files.push(new TextFile(key));
+                            }
+                        }
+
+                        return files;
+                    };
+
+                    FileSystem.prototype.getFile = function (name) {
+                        return new TextFile(FileSystem.filePrefix + name);
+                    };
+                    FileSystem.filePrefix = "file-";
+                    return FileSystem;
+                })();
+                LocalStorage.FileSystem = FileSystem;
+
+                var TextFile = (function () {
+                    function TextFile(key) {
+                        this.key = key;
+                        this.name = key.substr(FileSystem.filePrefix.length);
+                    }
+                    TextFile.prototype.save = function (content) {
+                        localStorage.setItem(this.key, content);
+                    };
+
+                    TextFile.prototype.load = function () {
+                        return localStorage.getItem(this.key);
+                    };
+
+                    TextFile.prototype.rename = function (name) {
+                        var otherFile = new TextFile(FileSystem.filePrefix + name);
+                        if (otherFile.exists()) {
+                            throw new Error("Cannot override file!");
+                        }
+
+                        var content = this.load();
+                        otherFile.save(content);
+                        this.delete();
+
+                        return otherFile;
+                    };
+
+                    TextFile.prototype.exists = function () {
+                        return localStorage.getItem(this.key);
+                    };
+
+                    TextFile.prototype.delete = function () {
+                        localStorage.removeItem(this.key);
+                    };
+                    return TextFile;
+                })();
+            })(Files.LocalStorage || (Files.LocalStorage = {}));
+            var LocalStorage = Files.LocalStorage;
+        })(Editor.Files || (Editor.Files = {}));
+        var Files = Editor.Files;
+    })(EMD.Editor || (EMD.Editor = {}));
+    var Editor = EMD.Editor;
+})(EMD || (EMD = {}));
+var EMD;
+(function (EMD) {
     ///<reference path="../EmdDocument.ts"/>
     ///<reference path="../MarkdownConverter.ts" />
     ///<reference path="../MarkdownEditor.ts" />
     ///<reference path="../utils/DragDropHelper.ts" />
     ///<reference path="../Config.ts" />
+    ///<reference path="../files/LocalStorage.ts" />
     ///<reference path="../../def/jquery.d.ts" />
     ///<reference path="../../def/angular.d.ts" />
     ///<reference path="../../def/ace.d.ts" />
@@ -1022,6 +1147,7 @@ var EMD;
                 $scope.controller = this;
 
                 this.scope = $scope;
+                this.fileSystem = new EMD.Editor.Files.LocalStorage.FileSystem();
 
                 var aceEditor = editors.markdownEditor;
                 var editor = new EMD.Editor.MarkdownEditor(aceEditor.getSession(), $('#app'));
@@ -1038,12 +1164,17 @@ var EMD;
                 // On load, load up the session
                 var anyWindow = window;
                 anyWindow.addEventListener('load', function () {
-                    var loader = $("#document-loader");
-                    $("#document-loader").load(function () {
-                        _this.initialize();
-                    });
+                    var lastFile = _this.fileSystem.getRootDirectory().getFile("temp");
+                    if (lastFile.exists()) {
+                        _this.load();
+                    } else {
+                        var loader = $("#document-loader");
+                        $("#document-loader").load(function () {
+                            _this.initialize();
+                        });
 
-                    loader.attr('src', "dmd-example.html");
+                        loader.attr('src', "dmd-example.html");
+                    }
                 }, false);
                 //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
             }
@@ -1074,12 +1205,33 @@ var EMD;
                 var rootElement = ($("#document-loader")[0]).contentDocument.querySelector("html");
 
                 var loadedDoc = EMD.load(rootElement);
+                this.loadDocument(loadedDoc);
+            };
+
+            AppController.prototype.loadDocument = function (loadedDoc) {
                 this.scope.document = loadedDoc;
                 this.document = loadedDoc;
 
                 this.markdownEditor.load(loadedDoc);
 
                 this.scope.$apply();
+            };
+
+            AppController.prototype.save = function () {
+                var file = this.fileSystem.getRootDirectory().getFile("temp");
+                var doc = new EMD.Document();
+                var element = this.markdownEditor.save(doc);
+                file.save(element.outerHTML);
+            };
+
+            AppController.prototype.load = function () {
+                var lastFile = this.fileSystem.getRootDirectory().getFile("temp");
+                var element = document.createElement("html");
+                var fakeElement = document.createElement("html");
+                element.appendChild(fakeElement);
+                fakeElement.outerHTML = lastFile.load();
+                var doc = EMD.load(element);
+                this.loadDocument(doc);
             };
 
             /**
@@ -1145,12 +1297,8 @@ var EMD;
             };
 
             ImagesController.prototype.handleFileSelect = function (files) {
-                console.log("Image/file drop detected");
-
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
-                    console.log("Attempt to add file: " + file.name);
-
                     if (file.type.indexOf('image/') !== 0)
                         continue;
 
@@ -1311,6 +1459,9 @@ var EMD;
                 fileMenu.addChild("Download", function () {
                     return _this.download();
                 });
+                fileMenu.addChild("Save", function () {
+                    return _this.save();
+                });
 
                 var editMenu = menu.addMenu("Edit");
                 editMenu.addChild("Undo", function () {
@@ -1371,7 +1522,7 @@ var EMD;
             * Save the current document
             */
             MenuController.prototype.save = function () {
-                alert("Saved");
+                this.appController.save();
             };
 
             /**
