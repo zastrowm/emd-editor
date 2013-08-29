@@ -74,8 +74,20 @@ var EMD;
                     // create a function from the "onfiledrop" attribute
                     var ondrop = $parse($attributes.onfiledrop);
 
+                    console.log($element.html());
+
+                    $element.on("dragover", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+
+                    $element.on("dragenter", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+
                     // on drop, call the ondrop method with the files
-                    $element.bind('drop', function (evt) {
+                    $element.on('drop', function (evt) {
                         // jquery event
                         evt.stopPropagation();
                         evt.preventDefault();
@@ -105,8 +117,8 @@ var EMD;
                 evt.preventDefault();
             }, false);
             dropZone.addEventListener('drop', function (evt) {
-                evt.stopPropagation();
-                evt.preventDefault();
+                //evt.stopPropagation();
+                //evt.preventDefault();
                 console.log(evt.target);
             }, false);
         });
@@ -311,7 +323,7 @@ var EMD;
         * @param contentElement the element that contains the markdown
         */
         Serializer.prototype.loadMarkdown = function (contentElement) {
-            var mdBody = Base64.decode(contentElement.innerText);
+            var mdBody = Base64.decode(contentElement.textContent.trim());
             this.doc.markdown = {
                 body: mdBody
             };
@@ -322,7 +334,7 @@ var EMD;
         * @param contentElement the element into which to save the markdown
         */
         Serializer.prototype.saveMarkdown = function (contentElement) {
-            contentElement.innerText = Base64.encode(this.doc.markdown.body);
+            contentElement.textContent = Base64.encode(this.doc.markdown.body);
         };
 
         /**
@@ -1133,8 +1145,12 @@ var EMD;
             };
 
             ImagesController.prototype.handleFileSelect = function (files) {
+                console.log("Image/file drop detected");
+
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
+                    console.log("Attempt to add file: " + file.name);
+
                     if (file.type.indexOf('image/') !== 0)
                         continue;
 

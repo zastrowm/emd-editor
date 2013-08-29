@@ -9,7 +9,8 @@
   <panel-body>
     <div class='images-container' id="image_drop_zone"
          dropzone
-         onfiledrop="controller.handleFileSelect(files)">
+         onfiledrop="controller.handleFileSelect(files)"
+         ondragover="return false;" ondrop="onDrop(event,this);">
       <div
           class='image'
           ng-repeat="image in document.images"
