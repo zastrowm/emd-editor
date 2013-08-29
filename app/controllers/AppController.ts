@@ -3,6 +3,7 @@
 ///<reference path="../MarkdownEditor.ts" />
 ///<reference path="../utils/DragDropHelper.ts" />
 ///<reference path="../Config.ts" />
+///<reference path="../files/LocalStorage.ts" />
 
 ///<reference path="../../def/jquery.d.ts" />
 ///<reference path="../../def/angular.d.ts" />
@@ -24,6 +25,8 @@ module EMD.Editor {
     public markdownEditor: EMD.Editor.MarkdownEditor;
     public document: EMD.Document;
 
+    private fileSystem: EMD.Editor.Files.IFileSystem;
+
     /**
      * Default constructor
      * @param $scope the Angular Scope
@@ -32,6 +35,7 @@ module EMD.Editor {
       $scope.controller = this;
 
       this.scope = $scope;
+      this.fileSystem = new EMD.Editor.Files.LocalStorage.FileSystem();
 
       var aceEditor = editors.markdownEditor;
       var editor = new EMD.Editor.MarkdownEditor(aceEditor.getSession(), $('#app'));
@@ -49,12 +53,17 @@ module EMD.Editor {
       var anyWindow = window;
       anyWindow.addEventListener('load', () => {
 
-        var loader = $("#document-loader");
-        $("#document-loader").load(() => {
-          this.initialize()
-        });
+        var lastFile = this.fileSystem.getRootDirectory().getFile("temp");
+        if (lastFile.exists()) {
+          this.load();
+        } else {
+          var loader = $("#document-loader");
+          $("#document-loader").load(() => {
+            this.initialize()
+          });
 
-        loader.attr('src', "dmd-example.html");
+          loader.attr('src', "dmd-example.html");
+        }
       }, false);
 
       //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
@@ -88,12 +97,33 @@ module EMD.Editor {
           .querySelector("html");
 
       var loadedDoc = EMD.load(rootElement);
+      this.loadDocument(loadedDoc);
+    }
+
+    private loadDocument(loadedDoc: EMD.Document) {
       this.scope.document = loadedDoc;
       this.document = loadedDoc;
 
       this.markdownEditor.load(loadedDoc);
 
       this.scope.$apply();
+    }
+
+    public save() {
+      var file = this.fileSystem.getRootDirectory().getFile("temp");
+      var doc = new EMD.Document();
+      var element = this.markdownEditor.save(doc);
+      file.save(element.outerHTML);
+    }
+
+    public load() {
+      var lastFile = this.fileSystem.getRootDirectory().getFile("temp");
+      var element = document.createElement("html");
+      var fakeElement = document.createElement("html");
+      element.appendChild(fakeElement);
+      fakeElement.outerHTML = lastFile.load();
+      var doc = EMD.load(element);
+      this.loadDocument(doc);
     }
 
     /**

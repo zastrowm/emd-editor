@@ -24,6 +24,7 @@ module EMD.Editor {
       var menu = new Menu();
       var fileMenu = menu.addMenu("File");
       fileMenu.addChild("Download", () => this.download());
+      fileMenu.addChild("Save", () => this.save());
 
       var editMenu = menu.addMenu("Edit");
       editMenu.addChild("Undo", () => this.undo(true));
@@ -71,7 +72,7 @@ module EMD.Editor {
      * Save the current document
      */
     private save() {
-      alert("Saved")
+      this.appController.save();
     }
 
     /**
