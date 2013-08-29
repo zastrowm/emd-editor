@@ -152,7 +152,7 @@ module EMD
      * @param contentElement the element that contains the markdown
      */
     private loadMarkdown(contentElement: HTMLElement) : void {
-      var mdBody = Base64.decode(contentElement.innerText);
+      var mdBody = Base64.decode(contentElement.textContent.trim());
       this.doc.markdown = {
         body: mdBody
       }
@@ -163,7 +163,7 @@ module EMD
      * @param contentElement the element into which to save the markdown
      */
     private saveMarkdown(contentElement: HTMLElement) : void {
-      contentElement.innerText = Base64.encode(this.doc.markdown.body);
+      contentElement.textContent = Base64.encode(this.doc.markdown.body);
     }
 
 

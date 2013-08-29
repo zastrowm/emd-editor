@@ -21,8 +21,21 @@ module EMD.Editor {
         // create a function from the "onfiledrop" attribute
         var ondrop = $parse($attributes.onfiledrop)
 
+        console.log($element.html());
+
+        $element.on("dragover", e => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+
+        $element.on("dragenter", e => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+
+
         // on drop, call the ondrop method with the files
-        $element.bind('drop', (evt) => {
+        $element.on('drop', (evt) => {
           // jquery event
           evt.stopPropagation();
           evt.preventDefault();
@@ -55,11 +68,10 @@ module EMD.Editor {
       evt.preventDefault();
     }, false);
     dropZone.addEventListener('drop', evt => {
-      evt.stopPropagation();
-      evt.preventDefault();
+      //evt.stopPropagation();
+      //evt.preventDefault();
       console.log(evt.target)
     }, false);
   });
-
 
 }
