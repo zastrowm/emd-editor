@@ -1,21 +1,5 @@
 
-//Function
-.selectNone() {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.rounded-corners (@radius: 5px) {
-  -webkit-border-radius: @radius;
-  -moz-border-radius: @radius;
-  -ms-border-radius: @radius;
-  -o-border-radius: @radius;
-  border-radius: @radius;
-}
+@import "shared";
 
 body, #app, #body {
   background-color: #333;
@@ -136,88 +120,7 @@ body, #app, #body {
   height: 25px;
 }
 
-#primary-panel {
-
-  &.hidden {
-    display: none;
-  }
-
-  min-width: 600px;
-  min-height: 600px;
-
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  background-color: black;
-  z-index: 1000;
-
-  > div.panel-container {
-    border: 1px solid #666;
-    background-color: #333;
-    position: absolute;
-    @gap: 2em;
-    right: @gap;
-    left: @gap;
-    top: @gap;
-    bottom: @gap;
-
-    .rounded-corners(3px);
-
-    > div.panel {
-
-      display: table;
-      table-layout: fixed;
-      height: 100%;
-      width: 100%;
-      table-layout: fixed;
-
-      > div.header {
-        display: table-row;
-        height: 1em;
-
-        border-bottom: 1px solid #ddd;
-
-        .content{
-          border-bottom: 1px solid #ddd;
-          padding: .1em 1em;
-        }
-      }
-
-      > div.body {
-        display: table-row;
-        overflow: hidden;
-
-        .content{
-          width: 100%;
-          height: 100%;
-          overflow: auto;
-          display: table-cell;
-        }
-      }
-
-      > div.footer {
-        display: table-row;
-        height: 1em;
-
-        background-color: rgba(255, 255, 255, .25);
-        text-align: right;
-        vertical-align: middle;
-
-        border-top: 1px solid #ddd;
-
-        .btn {
-          margin: 6px 5px;
-          min-width: 80px;
-          margin-top: 10px;
-        }
-      }
-    }
-
-
-  }
-}
+@import "panels";
 
 .md-editor {
   .editor, .preview {

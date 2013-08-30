@@ -21,8 +21,6 @@ module EMD.Editor {
         // create a function from the "onfiledrop" attribute
         var ondrop = $parse($attributes.onfiledrop)
 
-        console.log($element.html());
-
         $element.on("dragover", e => {
           e.preventDefault();
           e.stopPropagation();
@@ -36,6 +34,7 @@ module EMD.Editor {
 
         // on drop, call the ondrop method with the files
         $element.on('drop', (evt) => {
+
           // jquery event
           evt.stopPropagation();
           evt.preventDefault();
@@ -47,6 +46,7 @@ module EMD.Editor {
               && evt.dataTransfer.files != null
               && evt.dataTransfer.files.length > 0)
           {
+
             var files: FileList = evt.dataTransfer.files;
             ondrop($scope, {files: files});
           }

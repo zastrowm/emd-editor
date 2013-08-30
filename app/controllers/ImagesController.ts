@@ -18,7 +18,7 @@ module EMD.Editor {
     constructor($scope: any, private actions) {
       this.appController = <AppController>(<any>$scope.$parent).controller;
 
-      $scope.controller = this;
+      $scope.imageController = this;
     }
 
     private handleImageClick(image: EMD.Image) {
@@ -26,6 +26,7 @@ module EMD.Editor {
     }
 
     public handleFileSelect(files: FileList) {
+
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
         if (file.type.indexOf('image/') !== 0)
