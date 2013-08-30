@@ -1,5 +1,193 @@
+var Application;
+(function (Application) {
+    (function (Files) {
+        var FileSystems = (function () {
+            function FileSystems() {
+            }
+            FileSystems.register = /**
+            * Register a file system that can be created by clients
+            * @param name the name of the file system to register
+            * @param fileSystem the filesystem to be added
+            */
+            function (name, fileSystem) {
+                FileSystems.fileSystems[name.toLowerCase()] = fileSystem;
+            };
+
+            FileSystems.get = /**
+            * Get the file system associated with the name
+            * @param name the name of the file system to retrieve
+            */
+            function (name) {
+                return FileSystems.fileSystems[name.toLowerCase()];
+            };
+
+            FileSystems.allRegistered = /**
+            * Return an array of all registered file systems
+            * @returns {Array} an array of all registered file systems
+            */
+            function () {
+                var list = [];
+
+                var fss = FileSystems.fileSystems;
+                for (var key in fss) {
+                    if (fss.hasOwnProperty(key)) {
+                        list.push({
+                            name: key,
+                            system: fss[key]
+                        });
+                    }
+                }
+
+                return list;
+            };
+            FileSystems.fileSystems = {};
+            return FileSystems;
+        })();
+        Files.FileSystems = FileSystems;
+
+        (function (FileSystemSupport) {
+            FileSystemSupport[FileSystemSupport["FileRename"] = 0] = "FileRename";
+            FileSystemSupport[FileSystemSupport["FileDelete"] = 1] = "FileDelete";
+            FileSystemSupport[FileSystemSupport["CreateDirectory"] = 2] = "CreateDirectory";
+        })(Files.FileSystemSupport || (Files.FileSystemSupport = {}));
+        var FileSystemSupport = Files.FileSystemSupport;
+    })(Application.Files || (Application.Files = {}));
+    var Files = Application.Files;
+})(Application || (Application = {}));
+var Application;
+(function (Application) {
+    (function (Files) {
+        ///<reference path="FileSystem.ts" />
+        (function (LocalStorage) {
+            var fs = Application.Files;
+
+            /**
+            * File system impelmentation for local storage
+            */
+            var FileSystem = (function () {
+                function FileSystem() {
+                    /**
+                    * The name of the root directory is, '/'
+                    */
+                    this.name = "/";
+                }
+                /**
+                * Constructor
+                */
+                FileSystem.prototype.constructor = function () {
+                };
+
+                /* Interface Implementation */
+                FileSystem.prototype.supports = function (feature) {
+                    switch (feature) {
+                        case fs.FileSystemSupport.CreateDirectory:
+                            return false;
+                        case fs.FileSystemSupport.FileDelete:
+                            return true;
+                        case fs.FileSystemSupport.FileRename:
+                            return true;
+                        default:
+                            return false;
+                    }
+                };
+
+                /* Interface Implementation */
+                FileSystem.prototype.isValidFilename = function (fileName) {
+                    return /^[a-z0-9 \-\._]+$/i.test(fileName);
+                };
+
+                /* Interface Implementation */
+                FileSystem.prototype.getRootDirectory = function () {
+                    return this;
+                };
+
+                /* Interface Implementation */
+                /* Return no other directories */
+                FileSystem.prototype.getDirectories = function () {
+                    return [];
+                };
+
+                /* Interface Implementation */
+                FileSystem.prototype.getFiles = function () {
+                    var files = [];
+
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var key = localStorage.key(i);
+                        if (key.indexOf(FileSystem.filePrefix) == 0) {
+                            files.push(new TextFile(key));
+                        }
+                    }
+
+                    return files;
+                };
+
+                /* Interface Implementation */
+                FileSystem.prototype.getFile = function (name) {
+                    return new TextFile(FileSystem.filePrefix + name);
+                };
+                FileSystem.filePrefix = "file-";
+                return FileSystem;
+            })();
+            LocalStorage.FileSystem = FileSystem;
+
+            /**
+            * Local storage text file
+            */
+            var TextFile = (function () {
+                /**
+                * Create a new text file
+                * @param key the key associated with the file (the name is derivied by subtracting
+                * the common prefix
+                */
+                function TextFile(key) {
+                    this.key = key;
+                    this.name = key.substr(FileSystem.filePrefix.length);
+                }
+                /* Interface Implementation */
+                TextFile.prototype.save = function (content) {
+                    localStorage.setItem(this.key, content);
+                };
+
+                /* Interface Implementation */
+                TextFile.prototype.load = function () {
+                    return localStorage.getItem(this.key);
+                };
+
+                /* Interface Implementation */
+                TextFile.prototype.rename = function (name) {
+                    var otherFile = new TextFile(FileSystem.filePrefix + name);
+                    if (otherFile.exists()) {
+                        throw new Error("Cannot override file!");
+                    }
+
+                    var content = this.load();
+                    otherFile.save(content);
+                    this.delete();
+
+                    return otherFile;
+                };
+
+                /* Interface Implementation */
+                TextFile.prototype.exists = function () {
+                    return localStorage.getItem(this.key);
+                };
+
+                /* Interface Implementation */
+                TextFile.prototype.delete = function () {
+                    localStorage.removeItem(this.key);
+                };
+                return TextFile;
+            })();
+
+            Files.FileSystems.register("LocalStorage", new FileSystem());
+        })(Files.LocalStorage || (Files.LocalStorage = {}));
+        var LocalStorage = Files.LocalStorage;
+    })(Application.Files || (Application.Files = {}));
+    var Files = Application.Files;
+})(Application || (Application = {}));
 var EMD;
 (function (EMD) {
+    ///<reference path="application/files/LocalStorage.ts" />
     ///<reference path="../def/ace.d.ts" />
     ///<reference path="../def/angular.d.ts" />
     (function (Editor) {
@@ -1000,136 +1188,12 @@ var Utils;
 })(Utils || (Utils = {}));
 var EMD;
 (function (EMD) {
-    (function (Editor) {
-        (function (Files) {
-            (function (FileSystemSupport) {
-                FileSystemSupport[FileSystemSupport["FileRename"] = 0] = "FileRename";
-                FileSystemSupport[FileSystemSupport["FileDelete"] = 1] = "FileDelete";
-                FileSystemSupport[FileSystemSupport["CreateDirectory"] = 2] = "CreateDirectory";
-            })(Files.FileSystemSupport || (Files.FileSystemSupport = {}));
-            var FileSystemSupport = Files.FileSystemSupport;
-        })(Editor.Files || (Editor.Files = {}));
-        var Files = Editor.Files;
-    })(EMD.Editor || (EMD.Editor = {}));
-    var Editor = EMD.Editor;
-})(EMD || (EMD = {}));
-var EMD;
-(function (EMD) {
-    (function (Editor) {
-        (function (Files) {
-            ///<reference path="Filesystem.ts" />
-            (function (LocalStorage) {
-                var fs = EMD.Editor.Files;
-
-                var FileSystem = (function () {
-                    function FileSystem() {
-                        this.name = "/";
-                    }
-                    /**
-                    * Constructor
-                    */
-                    FileSystem.prototype.constructor = function () {
-                    };
-
-                    FileSystem.prototype.supports = function (feature) {
-                        switch (feature) {
-                            case fs.FileSystemSupport.CreateDirectory:
-                                return false;
-                            case fs.FileSystemSupport.FileDelete:
-                                return true;
-                            case fs.FileSystemSupport.FileRename:
-                                return true;
-                            default:
-                                return false;
-                        }
-                    };
-
-                    FileSystem.prototype.isValidFilename = function (fileName) {
-                        return /^[a-z0-9 \-\._]+$/i.test(fileName);
-                    };
-
-                    FileSystem.prototype.getRootDirectory = function () {
-                        return this;
-                    };
-
-                    /**
-                    * No other directories
-                    */
-                    FileSystem.prototype.getDirectories = function () {
-                        return [];
-                    };
-
-                    FileSystem.prototype.getFiles = function () {
-                        var files = [];
-
-                        for (var i = 0; i < localStorage.length; i++) {
-                            var key = localStorage.key(i);
-                            if (key.indexOf(FileSystem.filePrefix) == 0) {
-                                files.push(new TextFile(key));
-                            }
-                        }
-
-                        return files;
-                    };
-
-                    FileSystem.prototype.getFile = function (name) {
-                        return new TextFile(FileSystem.filePrefix + name);
-                    };
-                    FileSystem.filePrefix = "file-";
-                    return FileSystem;
-                })();
-                LocalStorage.FileSystem = FileSystem;
-
-                var TextFile = (function () {
-                    function TextFile(key) {
-                        this.key = key;
-                        this.name = key.substr(FileSystem.filePrefix.length);
-                    }
-                    TextFile.prototype.save = function (content) {
-                        localStorage.setItem(this.key, content);
-                    };
-
-                    TextFile.prototype.load = function () {
-                        return localStorage.getItem(this.key);
-                    };
-
-                    TextFile.prototype.rename = function (name) {
-                        var otherFile = new TextFile(FileSystem.filePrefix + name);
-                        if (otherFile.exists()) {
-                            throw new Error("Cannot override file!");
-                        }
-
-                        var content = this.load();
-                        otherFile.save(content);
-                        this.delete();
-
-                        return otherFile;
-                    };
-
-                    TextFile.prototype.exists = function () {
-                        return localStorage.getItem(this.key);
-                    };
-
-                    TextFile.prototype.delete = function () {
-                        localStorage.removeItem(this.key);
-                    };
-                    return TextFile;
-                })();
-            })(Files.LocalStorage || (Files.LocalStorage = {}));
-            var LocalStorage = Files.LocalStorage;
-        })(Editor.Files || (Editor.Files = {}));
-        var Files = Editor.Files;
-    })(EMD.Editor || (EMD.Editor = {}));
-    var Editor = EMD.Editor;
-})(EMD || (EMD = {}));
-var EMD;
-(function (EMD) {
     ///<reference path="../EmdDocument.ts"/>
     ///<reference path="../MarkdownConverter.ts" />
     ///<reference path="../MarkdownEditor.ts" />
     ///<reference path="../utils/DragDropHelper.ts" />
     ///<reference path="../Config.ts" />
-    ///<reference path="../files/LocalStorage.ts" />
+    ///<reference path="../application/files/FileSystem.ts" />
     ///<reference path="../../def/jquery.d.ts" />
     ///<reference path="../../def/angular.d.ts" />
     ///<reference path="../../def/ace.d.ts" />
@@ -1147,7 +1211,7 @@ var EMD;
                 $scope.controller = this;
 
                 this.scope = $scope;
-                this.fileSystem = new EMD.Editor.Files.LocalStorage.FileSystem();
+                this.fileSystem = Application.Files.FileSystems.get("LocalStorage");
 
                 var aceEditor = editors.markdownEditor;
                 var editor = new EMD.Editor.MarkdownEditor(aceEditor.getSession(), $('#app'));

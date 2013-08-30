@@ -1,5 +1,50 @@
 
-module EMD.Editor.Files {
+module Application.Files {
+
+  export class FileSystems {
+    /**
+     * All of the registered file systems
+     */
+    private static fileSystems: any = {};
+
+    /**
+     * Register a file system that can be created by clients
+     * @param name the name of the file system to register
+     * @param fileSystem the filesystem to be added
+     */
+    public static register(name: string, fileSystem: IFileSystem) {
+      FileSystems.fileSystems[name.toLowerCase()] = fileSystem;
+    }
+
+    /**
+     * Get the file system associated with the name
+     * @param name the name of the file system to retrieve
+     */
+    public static get(name: string): IFileSystem {
+      return FileSystems.fileSystems[name.toLowerCase()];
+    }
+
+    /**
+     * Return an array of all registered file systems
+     * @returns {Array} an array of all registered file systems
+     */
+    public static allRegistered(): {name: string; system: IFileSystem;}[] {
+
+      var list = [];
+
+      var fss: any = FileSystems.fileSystems;
+      for (var key in fss) {
+        if (fss.hasOwnProperty(key)) {
+          list.push({
+            name: key,
+            system: fss[key]
+          });
+        }
+      }
+
+      return list;
+    }
+  }
 
   export enum FileSystemSupport {
     FileRename,
