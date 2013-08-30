@@ -1,4 +1,6 @@
 
+///<reference path="application/files/LocalStorage.ts" />
+
 ///<reference path="Config.ts" />
 ///<reference path="directives/DropZoneDirective.ts" />
 ///<reference path="directives/PanelDirectives.ts" />

@@ -3,7 +3,7 @@
 ///<reference path="../MarkdownEditor.ts" />
 ///<reference path="../utils/DragDropHelper.ts" />
 ///<reference path="../Config.ts" />
-///<reference path="../files/LocalStorage.ts" />
+///<reference path="../application/files/FileSystem.ts" />
 
 ///<reference path="../../def/jquery.d.ts" />
 ///<reference path="../../def/angular.d.ts" />
@@ -25,17 +25,22 @@ module EMD.Editor {
     public markdownEditor: EMD.Editor.MarkdownEditor;
     public document: EMD.Document;
 
-    private fileSystem: EMD.Editor.Files.IFileSystem;
+    private fileSystem: Application.Files.IFileSystem;
 
     /**
      * Default constructor
      * @param $scope the Angular Scope
      */
-    constructor($rootScope, $scope, $state, editors: EditorsService) {
+    constructor(
+        $rootScope,
+        $scope,
+        $state,
+        editors: EditorsService
+        ) {
       $scope.controller = this;
 
       this.scope = $scope;
-      this.fileSystem = new EMD.Editor.Files.LocalStorage.FileSystem();
+      this.fileSystem = Application.Files.FileSystems.get("LocalStorage");
 
       var aceEditor = editors.markdownEditor;
       var editor = new EMD.Editor.MarkdownEditor(aceEditor.getSession(), $('#app'));

@@ -1,4 +1,6 @@
 
+///<reference path="application/files/LocalStorage.ts" />
+
 ///<reference path="../def/ace.d.ts" />
 ///<reference path="../def/angular.d.ts" />
 
