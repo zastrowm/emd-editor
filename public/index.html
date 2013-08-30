@@ -39,11 +39,9 @@
 
     </div>
   </div>
-  <div id="primary-panel" ng-class="{hidden: !showPanel}">
-    <div class="panel-container" ui-view>
+  <ui-view>
 
-    </div>
-  </div>
+  </ui-view>
   <!-- DownloadController -->
   <div class="modal hide fade" ng-controller="EMD.Editor.DownloadController" id="download-document">
     <div class="modal-header">
@@ -91,7 +89,7 @@
     editor.setTheme("ace/theme/twilight");
   </script>
   <iframe id="document-loader"></iframe>
-  <ng-include src="'styles/github.html'">
+  <ng-include src="'rendering/github.html'">
   </ng-include>
 
 

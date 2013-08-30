@@ -74,7 +74,8 @@ module EMD.Editor {
       //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
     }
 
-    private handleDrop(evt) {
+    public handleDrop(evt) {
+
       var file = evt.dataTransfer.files[0];
 
       var reader = new FileReader();

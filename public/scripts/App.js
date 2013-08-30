@@ -262,8 +262,6 @@ var EMD;
                     // create a function from the "onfiledrop" attribute
                     var ondrop = $parse($attributes.onfiledrop);
 
-                    console.log($element.html());
-
                     $element.on("dragover", function (e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -325,7 +323,7 @@ var EMD;
     ///<reference path="../../def/angular.d.ts" />
     ///<reference path="../Config.ts" />
     (function (Editor) {
-        Editor.emdEditorModule.directive('appPanel', function () {
+        Editor.emdEditorModule.directive('panel', function () {
             return new PanelDirective();
         });
         Editor.emdEditorModule.directive('panelHeader', function () {
@@ -341,6 +339,8 @@ var EMD;
         var PanelDirective = (function () {
             function PanelDirective() {
                 this.restrict = 'A';
+                this.transclude = true;
+                this.template = '<div class="panel-view">' + '<div class="panel-container">' + '<div class="panel" ng-transclude></div>' + '</div>' + '</div>';
             }
             return PanelDirective;
         })();
@@ -1354,7 +1354,7 @@ var EMD;
                 this.actions = actions;
                 this.appController = ($scope.$parent).controller;
 
-                $scope.controller = this;
+                $scope.imageController = this;
             }
             ImagesController.prototype.handleImageClick = function (image) {
                 this.actions.go("images.edit", { id: image.name });

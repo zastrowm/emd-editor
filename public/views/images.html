@@ -1,29 +1,29 @@
-
-<div x-app-panel class="panel"  id="panel-images"  ng-controller="EMD.Editor.ImagesController">
-  <panel-header>
-    <h2>Images</h2>
-    <p>
-      Add images by dragging them into the panel.  Select an image to edit or remove it.
-    </p>
-  </panel-header>
-  <panel-body>
-    <div class='images-container' id="image_drop_zone"
-         dropzone
-         onfiledrop="controller.handleFileSelect(files)"
-         ondragover="return false;" ondrop="onDrop(event,this);">
-      <div
-          class='image'
-          ng-repeat="image in document.images"
-          ng-click="controller.handleImageClick(image)">
-        <div class='framed-image'>
-          <img ng-src="{{image.data}}" ng-alt="{{image.name}}" draggable="false"/>
+<div panel>
+  <div class="content" ng-controller="EMD.Editor.ImagesController" id="panel-images">
+    <panel-header>
+      <h2>Images</h2>
+      <p>
+        Add images by dragging them into the panel.  Select an image to edit or remove it.
+      </p>
+    </panel-header>
+    <panel-body>
+      <div class='images-container'
+           dropzone
+           onfiledrop="imageController.handleFileSelect(files)">
+        <div
+            class='image'
+            ng-repeat="image in document.images"
+            ng-click="controller.handleImageClick(image)">
+          <div class='framed-image'>
+            <img ng-src="{{image.data}}" ng-alt="{{image.name}}" draggable="false"/>
+          </div>
+          <p>{{image.name}}</p>
         </div>
-        <p>{{image.name}}</p>
       </div>
-    </div>
-  </panel-body>
-  <panel-footer>
-    <a href="#" class="btn btn-primary">Done</a>
-  </panel-footer>
+    </panel-body>
+    <panel-footer>
+      <a href="#" class="btn btn-primary">Done</a>
+    </panel-footer>
+  </div>
 </div>
 
