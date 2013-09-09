@@ -10,44 +10,61 @@
   }
 
   .image {
-    background-color: rgba(255, 255, 255, 0.05);
-    height: 120px;
+
+    @black25: rgba(0, 0, 0, 0.25);
+    @black100: rgba(0, 0, 0, 100);
+
     display: inline-block;
     position: relative;
     margin: 10px;
-    width: 100px;
     text-align: center;
     cursor: pointer;
 
     .selectNone();
 
-    &:hover {
+    &:hover, &:focus {
       background-color: rgba(255, 255, 255, 0.15);
+
+      p {
+        background-color: @black100;
+      }
+
+      border-color: 1px solid blue;
     }
 
     p {
-      border-top: 1px solid rgba(0, 0, 0, 0.25);
-      font-size: .7em;
       position: absolute;
-      left: 0px;
       right: 0px;
-      bottom: 4px;
+      left:0px;
+      top: 0px;
       overflow: hidden;
       height: 1.7em;
       margin-bottom: 0px;
+      text-align: left;
+      padding-left: .5em;
+      background-color: @black25;
     }
 
-    .framed-image {
-      width: 100px;
-      height: 100px;
+    span.actions {
+      display: block;
       position: absolute;
-      top: 0px;
-      left: 0px;
+      right: 10px;
+      top: 2px;
 
-      img {
-        max-width: 90px;
-        max-height: 90px;
+      span {
+        opacity: .5;
+
+        &:hover {
+          opacity: 1;
+        }
       }
+    }
+
+    img {
+      max-width: 400px;
+      max-height: 200px;
+
+      .rounded-corners(10px);
     }
   }
 
@@ -57,3 +74,25 @@
   }
 }
 
+.image-preview {
+  position: absolute;
+  left:1em;
+  top:1em;
+  bottom:1em;
+  right:1em;
+  background-color: rgba(255, 255, 255, .1);
+
+  & > img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    margin:auto;
+  }
+}
+
+.image-edit {
+  position: absolute;
+  top: 1em;
+  right: .5em;
+  width: 20em;
+}

@@ -1,3 +1,4 @@
 --sourcemap
+--target ES5
 zApp.ts
 --out ../public/scripts/App.js

@@ -5,6 +5,21 @@
   <meta content="utf-8" http-equiv="encoding">
   <title>Embedded Markdown Document Editor</title>
   <link href="styles/gen/editor.css" type="text/css" rel="stylesheet" />
+
+  <!-- Third Party References -->
+  <script src="lib/scripts/jquery.min.js"></script>
+  <script src="lib/scripts/bootstrap.min.js"></script>
+  <script src="lib/scripts/MarkdownDeep.min.js"></script>
+  <script src="lib/scripts/angular.min.js"></script>
+  <script src="lib/scripts/angular-ui-router.min.js"></script>
+  <script src="lib/scripts/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+
+  <link href="lib/styles/bootstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="lib/styles/darkstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="lib/font/style.css" type="text/css" rel="stylesheet" />
+
+  <!-- First Party References -->
+  <script src="scripts/App.js"></script>
 </head>
 <body ng-controller="EMD.Editor.AppController">
   <div id="body">
@@ -69,19 +84,7 @@
 
   </div>
 
-  <!-- Third Party References -->
-  <script src="lib/scripts/jquery.min.js"></script>
-  <script src="lib/scripts/bootstrap.min.js"></script>
-  <script src="lib/scripts/MarkdownDeep.min.js"></script>
-  <script src="lib/scripts/angular.min.js"></script>
-  <script src="lib/scripts/angular-ui-router.min.js"></script>
-  <script src="lib/scripts/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
-  <link href="lib/styles/bootstrap.min.css" type="text/css" rel="stylesheet" />
-  <link href="lib/styles/darkstrap.min.css" type="text/css" rel="stylesheet" />
-
-  <!-- First Party References -->
-  <script src="scripts/App.js"></script>
 
   <script>
     var editor = ace.edit("core-editor");

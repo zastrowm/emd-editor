@@ -1,6 +1,82 @@
 
 @import "shared";
 
+.content() {
+  border: 1px solid #666;
+  background-color: #333;
+}
+
+.bottom() {
+  border-top: 1px solid #ddd;
+  background-color: rgba(255, 255, 255, .25);
+  text-align: right;
+
+  .btn {
+    margin: 6px 5px;
+    min-width: 80px;
+    margin-top: 10px;
+  }
+
+  button.action  {
+    float: left;
+  }
+
+}
+
+.full {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: rgba(0, 0, 0, .8);
+  z-index: 1000;
+
+  .full {
+    z-index: 2000;
+
+    .full {
+      z-index: 3000;
+    }
+  }
+}
+
+.dialog-view {
+  text-align: center;
+}
+
+.dialog {
+  min-width: 200px;
+  min-height: 100px;
+  display: inline-block;
+  margin: 3em auto;
+  text-align: left;
+
+  &.small {
+    width: 600px;
+  }
+
+  .content();
+
+  .header {
+    border-bottom: 1px solid #ddd;
+    padding: 0em 1em;
+  }
+
+  .body {
+    padding: 1em;
+  }
+
+  .footer {
+    .bottom();
+  }
+}
+
+.full-expand() {
+  height: 100%;
+  width: 100%;
+}
+
 .panel-view {
 
   min-width: 500px;
@@ -11,12 +87,12 @@
   top: 0px;
   right: 0px;
   bottom: 0px;
-  background-color: black;
+  background-color: rgba(0, 0, 0, .8);
   z-index: 1000;
 
   > div.panel-container {
-    border: 1px solid #666;
-    background-color: #333;
+    .content();
+
     position: absolute;
     @gap: 2em;
     right: @gap;
@@ -28,57 +104,72 @@
 
     > div.panel {
 
-      height: 100%;
-      width: 100%;
+      .full-expand();
 
-      div.content {
+      > div.content-container {
         display: table;
+        .full-expand();
         table-layout: fixed;
-        height: 100%;
-        width: 100%;
-        table-layout: fixed;
-      }
 
-      div.header {
-        display: table-row;
-        height: 1em;
+        > div.header .content-container, > div.body .content-container, > div.footer  .content-container {
+          .full-expand();
+        }
 
-        border-bottom: 1px solid #ddd;
 
-        .content{
-          border-bottom: 1px solid #ddd;
-          padding: .1em 1em;
+        > div.header {
+          display: table-row;
+          height: 1em;
+
+          > .content-container {
+            border-bottom: 1px solid #ddd;
+
+            > .content {
+              padding: .1em 1em;
+            }
+          }
+
+          button.close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2em;
+            color:  white;
+          }
+        }
+
+        > div.body {
+          display: table-row;
+          overflow: hidden;
+
+          > .content-container,{
+            overflow: auto;
+            display: table-cell;
+
+            > .content {
+             .full-expand();
+
+              overflow: auto;
+              position: relative;
+            }
+          }
+        }
+
+        > div.footer {
+          display: table-row;
+
+          .bottom();
+          vertical-align: middle;
+
+          > .content-container {
+            > .content {
+              padding: .1em 1em;
+            }
+          }
+
+
         }
       }
 
-      div.body {
-        display: table-row;
-        overflow: hidden;
-
-        .content{
-          width: 100%;
-          height: 100%;
-          overflow: auto;
-          display: table-cell;
-        }
-      }
-
-      div.footer {
-        display: table-row;
-        height: 1em;
-
-        background-color: rgba(255, 255, 255, .25);
-        text-align: right;
-        vertical-align: middle;
-
-        border-top: 1px solid #ddd;
-
-        .btn {
-          margin: 6px 5px;
-          min-width: 80px;
-          margin-top: 10px;
-        }
-      }
     }
 
 
