@@ -2,12 +2,9 @@
   background-color: blue;
 }
 #panel-images .image {
-  background-color: rgba(255, 255, 255, 0.05);
-  height: 120px;
   display: inline-block;
   position: relative;
   margin: 10px;
-  width: 100px;
   text-align: center;
   cursor: pointer;
   -webkit-touch-callout: none;
@@ -17,32 +14,69 @@
   -ms-user-select: none;
   user-select: none;
 }
-#panel-images .image:hover {
+#panel-images .image:hover,
+#panel-images .image:focus {
   background-color: rgba(255, 255, 255, 0.15);
+  border-color: 1px solid blue;
+}
+#panel-images .image:hover p,
+#panel-images .image:focus p {
+  background-color: #000000;
 }
 #panel-images .image p {
-  border-top: 1px solid rgba(0, 0, 0, 0.25);
-  font-size: .7em;
   position: absolute;
-  left: 0px;
   right: 0px;
-  bottom: 4px;
+  left: 0px;
+  top: 0px;
   overflow: hidden;
   height: 1.7em;
   margin-bottom: 0px;
+  text-align: left;
+  padding-left: .5em;
+  background-color: rgba(0, 0, 0, 0.25);
 }
-#panel-images .image .framed-image {
-  width: 100px;
-  height: 100px;
+#panel-images .image span.actions {
+  display: block;
   position: absolute;
-  top: 0px;
-  left: 0px;
+  right: 10px;
+  top: 2px;
 }
-#panel-images .image .framed-image img {
-  max-width: 90px;
-  max-height: 90px;
+#panel-images .image span.actions span {
+  opacity: .5;
+}
+#panel-images .image span.actions span:hover {
+  opacity: 1;
+}
+#panel-images .image img {
+  max-width: 400px;
+  max-height: 200px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
 }
 #panel-images .images-container {
   width: 100%;
   height: 100%;
+}
+.image-preview {
+  position: absolute;
+  left: 1em;
+  top: 1em;
+  bottom: 1em;
+  right: 1em;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.image-preview > img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}
+.image-edit {
+  position: absolute;
+  top: 1em;
+  right: .5em;
+  width: 20em;
 }

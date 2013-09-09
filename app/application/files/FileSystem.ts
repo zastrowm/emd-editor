@@ -1,5 +1,11 @@
+///<reference path="Path.ts" />
 
 module Application.Files {
+
+  export interface INamedSystem {
+    name: string;
+    system: IFileSystem;
+  }
 
   export class FileSystems {
     /**
@@ -28,19 +34,18 @@ module Application.Files {
      * Return an array of all registered file systems
      * @returns {Array} an array of all registered file systems
      */
-    public static allRegistered(): {name: string; system: IFileSystem;}[] {
+    public static allRegistered(): INamedSystem[] {
 
-      var list = [];
+      var list: INamedSystem[] = [];
 
       var fss: any = FileSystems.fileSystems;
-      for (var key in fss) {
-        if (fss.hasOwnProperty(key)) {
-          list.push({
-            name: key,
-            system: fss[key]
-          });
-        }
-      }
+
+      Object.keys(fss).forEach(key => {
+        list.push({
+          name: key,
+          system: fss[key]
+        });
+      })
 
       return list;
     }

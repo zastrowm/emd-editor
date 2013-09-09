@@ -1,0 +1,18 @@
+<div class="full" ng-controller="EmbeddedMarkdown.Editor.ImageRenameController">
+  <xdialog>
+    <xpart as="header">
+      <button xclose ui-sref="^" />
+      <h3>Rename {{controller.image.name}}?</h3>
+    </xpart>
+    <xpart as="body">
+      <p>Deleting {{image.name}} is a irreversable operation.  Are you sure you'd like to delete it?</p>
+        <label>Image Name:</label>
+        <input autofocus type="text" ng-model="controller.newName" />
+    </xpart>
+    <xpart as="footer">
+      <button xokay autofocus />
+      <button ui-sref='^' xcancel />
+    </xpart>
+  </xdialog>
+</div>
+

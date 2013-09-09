@@ -1,28 +1,41 @@
 ///<reference path="AppController.ts" />
 ///<reference path="../EmdDocument.ts" />
 ///<reference path="../../def/jquery.d.ts" />
+///<reference path="../EditAppService.ts" />
+///<reference path="zController.ts" />
+///<reference path="../application/files/Path.ts" />
+///<reference path="../application/files/FilePath.ts" />
 
+module EmbeddedMarkdown.Editor {
 
-module EMD.Editor {
+  interface FilenameParts {
+    name: string;
+
+    extension: string;
+  }
 
   /**
    * Handles the images
    */
-  export class ImagesController {
-    private appController: AppController;
+  export class ImagesController extends Controller {
+    private images: EmbeddedMarkdown.Image[];
 
     /**
      * Create a new menu controller
      * @param $scope the scope for which the controller is active
      */
-    constructor($scope: any, private actions) {
-      this.appController = <AppController>(<any>$scope.$parent).controller;
+    constructor($scope: any, private editApp: EmbeddedMarkdown.Editor.EditAppService){
+      super($scope);
 
-      $scope.imageController = this;
+      this.images = editApp.documents.current.images;
     }
 
-    private handleImageClick(image: EMD.Image) {
-      this.actions.go("images.edit", {id: image.name});
+    /**
+     * Called when we click on an image
+     * @param image the image that was clicked
+     */
+    public handleImageClick(image: EmbeddedMarkdown.Image) {
+      this.editApp.actions.go("images.edit", {id: image.name});
     }
 
     public handleFileSelect(files: FileList) {
@@ -36,40 +49,55 @@ module EMD.Editor {
       }
     }
 
-    private addFile(file) {
+    public editImage(image: EmbeddedMarkdown.Image) {
+      this.go("images.edit.rename", {id: image.name});
+    }
+
+    public deleteImage(image: EmbeddedMarkdown.Image) {
+      this.go("images.edit.delete", {id: image.name});
+    }
+
+    /**
+     * Add a file to the list of images (if it is an image)
+     */
+    private addFile(file: File) {
+      var filePath = Application.Files.Path.parseFilePath(decodeURI(file.name));
+
+      if (!this.isValidFileType(filePath))
+        return;
+
       this.convertBlockToBase64(file, base64 => {
-        this.addFileWithName(file, file.name, base64);
+        this.addFileWithName(filePath, base64);
       });
     }
 
-    private addFileWithName(file: File, filename: string, data: string) {
+    private isValidFileType(filePath: Application.Files.FilePath): boolean {
 
-      filename = decodeURI(filename);
-
-      var indexOfPeriod = filename.lastIndexOf('.');
-      if (indexOfPeriod == -1)
-        return;
-
-      var extension = filename.substr(indexOfPeriod + 1).toLowerCase();
-      var name = filename.substring(0, indexOfPeriod);
-
-      switch (extension) {
+      switch (filePath.extension.toLowerCase()) {
         case "png":
         case "jpeg":
         case "jpg":
         case "bmp":
-          break;
+          return true;
         default:
-          return;
+          return false;
       }
+    }
 
-      var document = this.appController.document;
+    /**
+     * Add a file with a specific name
+     * @param filename the name of the file to add
+     * @param data the data associated with the file
+     */
+    private addFileWithName(filePath: Application.Files.FilePath, data:string) {
 
-      var testName = name + "." + extension;
+      var name = filePath.name;
+
+      var images = this.editApp.documents.current.document.images;
 
       var i = 2;
-      while (document.containsImageWithName(testName)) {
-        testName = name + " (" + i + ")"+ "." + extension;
+      while (images.contains(filePath.toString())) {
+        filePath.name = name + " (" + i + ")";
         i++;
 
         // make sure we don't enter infinite loop
@@ -78,27 +106,16 @@ module EMD.Editor {
         }
       }
 
-      filename = testName;
+      var fullData =  "data:image/" + filePath.extension.toLowerCase() + ";base64," + data;
+      var newImage = new EmbeddedMarkdown.Image(filePath.toString(), fullData);
 
-      var newImage = new EMD.Image(filename, "data:image/" + extension + ";base64," + data);
+      this.editApp.documents.current.document.images.add(newImage.name, newImage);
 
-
-    // refresh the image list
-      document.addImage(newImage);
-      this.appController.refreshImages();
+      this.apply();
     }
 
-    /**
-     * Invoked when the file the user would like to upload has changed
-     */
-    private handleFileChanged(element: HTMLInputElement) {
-
-      var files = element.files;
-
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        this.addFile(file);
-      }
+    public onCancel() {
+      this.go('edit');
     }
 
     /**

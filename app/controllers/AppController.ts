@@ -4,6 +4,8 @@
 ///<reference path="../utils/DragDropHelper.ts" />
 ///<reference path="../Config.ts" />
 ///<reference path="../application/files/FileSystem.ts" />
+///<reference path="../../emd/EmbeddedMarkdown.ts" />
+///<reference path="../../emd/Serializer.ts" />
 
 ///<reference path="../../def/jquery.d.ts" />
 ///<reference path="../../def/angular.d.ts" />
@@ -35,7 +37,8 @@ module EMD.Editor {
         $rootScope,
         $scope,
         $state,
-        editors: EditorsService
+        editors: EditorsService,
+        private editApp: any
         ) {
       $scope.controller = this;
 
@@ -43,107 +46,65 @@ module EMD.Editor {
       this.fileSystem = Application.Files.FileSystems.get("LocalStorage");
 
       var aceEditor = editors.markdownEditor;
-      var editor = new EMD.Editor.MarkdownEditor(aceEditor.getSession(), $('#app'));
+      var editor = new EMD.Editor.MarkdownEditor(
+          aceEditor.getSession(),
+          $('#app'),
+          editApp.documents
+      );
       this.editor = aceEditor;
+      this.editor.setFontSize("1.1em");
+      this.editor.renderer.setShowGutter(false);
 
       this.markdownEditor = editor;
-
-      $scope.initialize = this.initialize;
 
       $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams) {
         $scope.showPanel = !$state.includes('edit');
       })
 
-      // On load, load up the session
-      var anyWindow = window;
-      anyWindow.addEventListener('load', () => {
-
-        var lastFile = this.fileSystem.getRootDirectory().getFile("temp");
-        if (lastFile.exists()) {
-          this.load();
-        } else {
-          var loader = $("#document-loader");
-          $("#document-loader").load(() => {
-            this.initialize()
-          });
-
-          loader.attr('src', "dmd-example.html");
-        }
-      }, false);
+      var lastFile = this.fileSystem.getRootDirectory().getFile("session");
+      this.loadSession();
 
       //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
     }
 
-    public handleDrop(evt) {
+    public saveSession() {
+      var doc = this.editApp.documents.current.document;
 
-      var file = evt.dataTransfer.files[0];
+      // add the content/rendered
+      doc.parts.set('body', this.markdownEditor.session.getValue());
+      doc.renderedHtml = this.markdownEditor.renderElement.html();
 
-      var reader = new FileReader();
+      var text = EmbeddedMarkdown.toString(doc);
 
-      reader.onloadend = () => {
-        this.loadFromText(reader.result);
+      this.fileSystem.getRootDirectory().getFile("session").save(text);
+    }
+
+    public loadSession() {
+      var file = this.fileSystem.getRootDirectory().getFile("session");
+
+      if (file == null || !file.exists()) {
+        this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(
+          new EmbeddedMarkdown.EmdDocument()
+        );
+      } else {
+        this.editApp.documents.load(file);
+        this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
       }
 
-      var text = reader.readAsText(file);
-    }
-
-    private loadFromText(text: string) {
-      var element = document.createElement("html");
-      element.innerHTML = text;
-      var doc = EMD.load(element);
-      this.markdownEditor.load(doc);
-    }
-
-    /**
-     * Initialize and load the document
-     */
-    initialize() {
-      var rootElement = <HTMLElement>(<HTMLIFrameElement>$("#document-loader")[0])
-          .contentDocument
-          .querySelector("html");
-
-      var loadedDoc = EMD.load(rootElement);
-      this.loadDocument(loadedDoc);
-    }
-
-    private loadDocument(loadedDoc: EMD.Document) {
-      this.scope.document = loadedDoc;
-      this.document = loadedDoc;
-
-      this.markdownEditor.load(loadedDoc);
-
-      this.scope.$apply();
-    }
-
-    public save() {
-      var file = this.fileSystem.getRootDirectory().getFile("temp");
-      var doc = new EMD.Document();
-      var element = this.markdownEditor.save(doc);
-      file.save(element.outerHTML);
-    }
-
-    public load() {
-      var lastFile = this.fileSystem.getRootDirectory().getFile("temp");
-      var element = document.createElement("html");
-      var fakeElement = document.createElement("html");
-      element.appendChild(fakeElement);
-      fakeElement.outerHTML = lastFile.load();
-      var doc = EMD.load(element);
-      this.loadDocument(doc);
     }
 
     /**
      * Download the file
      */
     downloadFile() {
-      var doc = new EMD.Document();
-      var html = this.markdownEditor.save(doc);
-
-      var href = "data:text/html," + html.innerHTML;
-
-      this.scope.$broadcast('download', {
-        downloadData: href
-      })
+//      var doc = new EMD.Document();
+//      var html = this.markdownEditor.save(doc);
+//
+//      var href = "data:text/html," + html.innerHTML;
+//
+//      this.scope.$broadcast('download', {
+//        downloadData: href
+//      })
     }
 
     /**
@@ -157,15 +118,6 @@ module EMD.Editor {
         this.editor.getSession().getUndoManager().redo(false);
       }
     }
-
-    /**
-     * Refresh all of the images
-     */
-    public refreshImages() {
-      this.scope.$apply();
-    }
   }
-
-
 
 }

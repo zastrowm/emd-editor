@@ -30,10 +30,6 @@ module EMD.Editor {
       editMenu.addChild("Undo", () => this.undo(true));
       editMenu.addChild("Redo", () => this.undo(false));
 
-      var modeMenu = menu.addMenu("Mode");
-      modeMenu.addChild("Editor & Preview", () => this.appController.markdownEditor.setMode(EditorMode.EditorAndPreview));
-      modeMenu.addChild("Editor Only", () => this.appController.markdownEditor.setMode(EditorMode.EditorOnly));
-
       var documentMenu = menu.addMenu("Document");
       documentMenu.addChild("Images", () => this.goto("images"));
 
@@ -72,7 +68,7 @@ module EMD.Editor {
      * Save the current document
      */
     private save() {
-      this.appController.save();
+      this.appController.saveSession();
     }
 
     /**
