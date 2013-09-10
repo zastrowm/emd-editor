@@ -72,14 +72,10 @@ module EmbeddedMarkdown.Editor {
     }
 
     public canSave(): boolean {
-      return this.isNameUnique()
-    }
-
-    public isNameUnique() {
       var images = this.app.documents.current.document.images;
       var otherImage = images.get(this.newName);
-      return otherImage == null || otherImage == this.image;
+      var isUnique = otherImage == null || otherImage == this.image;
+      return isUnique && this.newName.trim().length != 0;
     }
-
   }
 }

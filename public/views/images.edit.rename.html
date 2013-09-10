@@ -4,13 +4,15 @@
       <button xclose ui-sref="^" />
       <h3>Rename {{controller.image.name}}?</h3>
     </xpart>
-    <xpart as="body">
-      <p>Deleting {{image.name}} is a irreversable operation.  Are you sure you'd like to delete it?</p>
-        <label>Image Name:</label>
-        <input autofocus type="text" ng-model="controller.newName" />
+    <xpart as="body" id="image-rename">
+        <label>Rename {{controller.image.name}}: </label>
+        <input type="text"
+               ng-model="controller.newName"
+               autofocus
+               onfocus="$(this).select()" />
     </xpart>
     <xpart as="footer">
-      <button xokay autofocus ng-disabled="!controller.canSave()" />
+      <button xokay ng-disabled="!controller.canSave()" />
       <button ui-sref='^' xcancel />
     </xpart>
   </xdialog>
