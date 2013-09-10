@@ -704,6 +704,23 @@ var EmbeddedMarkdown;
 })(EmbeddedMarkdown || (EmbeddedMarkdown = {}));
 var Hexpect;
 (function (Hexpect) {
+    function f(format) {
+        var rest = [];
+        for (var _i = 0; _i < (arguments.length - 1); _i++) {
+            rest[_i] = arguments[_i + 1];
+        }
+        return f2(format, rest);
+    }
+    ;
+
+    function f2(format, rest) {
+        var args = rest;
+        return format.replace(/{(\d+)}/g, function (match, number) {
+            return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+    }
+    ;
+
     function trimRight(str) {
         return str.replace(/\s+$/g, '');
     }
@@ -871,7 +888,7 @@ else
                     if (expectedAttribute.errorText != null)
                         this.throw(expectedAttribute.errorText, htmlElement);
 
-                    this.throw("Expected attribute " + expectedAttribute.name + " to have value of " + expectedAttribute.value, htmlElement);
+                    this.throwOn(htmlElement, "Expected attribute {0} to have value of '{1}' but was '{2}'", expectedAttribute.name, expectedAttribute.value, actualAttribute.nodeValue);
                 }
             }
 
@@ -981,6 +998,14 @@ else
                     return "Element error. " + errorText + ". " + _this.toString();
                 }
             };
+        };
+
+        Element.prototype.throwOn = function (element, errorFormatString) {
+            var rest = [];
+            for (var _i = 0; _i < (arguments.length - 2); _i++) {
+                rest[_i] = arguments[_i + 2];
+            }
+            this.throw(f2(errorFormatString, rest), element);
         };
         return Element;
     })();
@@ -1503,12 +1528,12 @@ var EmbeddedMarkdown;
                             {
                                 tag: "DIV",
                                 $id: "-emd-rendered",
-                                html: ""
+                                html: doc.renderedHtml
                             },
                             {
                                 tag: "DIV",
                                 $id: "-emd-document",
-                                $style: "display: none",
+                                $style: "display: none;",
                                 children: [
                                     {
                                         tag: "DIV",
@@ -1583,7 +1608,7 @@ var EmbeddedMarkdown;
         };
 
         Serializer.VerifyConformance = function (html) {
-            var grammar = '' + 'html\n' + '  head\n' + '    meta\n' + '      @charset="utf-8", Meta tag requires charset of "utf-8"\n' + '    title\n' + '    script\n' + '      @type="application/json"\n' + '      @id="-emd-meta"\n' + '    style*\n' + '      @data-emd-name, Missing name on style tag\n' + '    script*\n' + '      @data-emd-name,\n' + '\n' + '  body\n' + '    div\n' + '      @id="-emd-rendered"\n' + '      **\n' + '    div\n' + '      @id="-emd-document"\n' + '      @style="display: none"\n' + '      div\n' + '        @id="-emd-content"\n' + '        script\n' + '          @type="text/x-emd-markdown"\n' + '          @data-emd-name\n' + '      div\n' + '        @id="-emd-images"\n' + '        img*\n' + '          @data-emd-name\n' + '          @alt=""\n' + '          @src\n' + '      div\n' + '        @id="-emd-extra"\n' + '        **\n' + '';
+            var grammar = '' + 'html\n' + '  head\n' + '    meta\n' + '      @charset="utf-8", Meta tag requires charset of "utf-8"\n' + '    title\n' + '    script\n' + '      @type="application/json"\n' + '      @id="-emd-meta"\n' + '    style*\n' + '      @data-emd-name, Missing name on style tag\n' + '    script*\n' + '      @data-emd-name,\n' + '\n' + '  body\n' + '    div\n' + '      @id="-emd-rendered"\n' + '      **\n' + '    div\n' + '      @id="-emd-document"\n' + '      @style="display: none;"\n' + '      div\n' + '        @id="-emd-content"\n' + '        script\n' + '          @type="text/x-emd-markdown"\n' + '          @data-emd-name\n' + '      div\n' + '        @id="-emd-images"\n' + '        img*\n' + '          @data-emd-name\n' + '          @alt=""\n' + '          @src\n' + '      div\n' + '        @id="-emd-extra"\n' + '        **\n' + '';
 
             grammar = grammar.replace(/  /g, '\t');
             var validator = Hexpect.createValidator(grammar);
@@ -3088,14 +3113,16 @@ var EMD;
             * Download the file
             */
             AppController.prototype.downloadFile = function () {
-                //      var doc = new EMD.Document();
-                //      var html = this.markdownEditor.save(doc);
-                //
-                //      var href = "data:text/html," + html.innerHTML;
-                //
-                //      this.scope.$broadcast('download', {
-                //        downloadData: href
-                //      })
+                var doc = this.editApp.documents.current.document;
+
+                // add the content/rendered
+                doc.parts.set('body', this.markdownEditor.session.getValue());
+                doc.renderedHtml = this.markdownEditor.renderElement.html();
+
+                var text = EmbeddedMarkdown.toString(doc);
+
+                var blob = new Blob([text], { type: "text/html;charset=utf-8" });
+                (window).saveAs(blob, "document.emd.html");
             };
 
             /**
@@ -3605,7 +3632,7 @@ var EmbeddedMarkdown;
             /**
             * Save the changes made
             */
-            ImageRenameController.prototype.onSave = function () {
+            ImageRenameController.prototype.onOkay = function () {
                 console.log("Saving edited image");
 
                 if (this.newName != this.image.name) {

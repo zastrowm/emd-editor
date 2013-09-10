@@ -1,6 +1,20 @@
 
 module Hexpect {
 
+  function f(format: string, ... rest: any[]) {
+    return f2(format, rest);
+  };
+
+  function f2(format: string, rest: any[]) {
+    var args = rest;
+    return format.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined'
+          ? args[number]
+          : match
+          ;
+    });
+  };
+
   function trimRight(str: string) {
     return  str.replace(/\s+$/g, '')
   }
@@ -203,7 +217,8 @@ module Hexpect {
           if (expectedAttribute.errorText != null)
             this.throw(expectedAttribute.errorText, htmlElement);
 
-          this.throw("Expected attribute " + expectedAttribute.name + " to have value of " + expectedAttribute.value, htmlElement);
+          this.throwOn(htmlElement, "Expected attribute {0} to have value of '{1}' but was '{2}'",
+              expectedAttribute.name, expectedAttribute.value, actualAttribute.nodeValue)
         }
       }
 
@@ -317,6 +332,10 @@ module Hexpect {
           return "Element error. " + errorText + ". " + this.toString();
         }
       }
+    }
+
+    private throwOn(element: HTMLElement, errorFormatString: string, ...rest: any[]) {
+      this.throw(f2(errorFormatString, rest), element);
     }
   }
 

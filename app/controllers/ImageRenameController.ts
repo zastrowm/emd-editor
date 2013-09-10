@@ -57,7 +57,7 @@ module EmbeddedMarkdown.Editor {
     /**
      * Save the changes made
      */
-    public onSave(): void {
+    public onOkay(): void {
       console.log("Saving edited image");
 
       if (this.newName != this.image.name) {

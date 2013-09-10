@@ -10,7 +10,7 @@
         <input autofocus type="text" ng-model="controller.newName" />
     </xpart>
     <xpart as="footer">
-      <button xokay autofocus />
+      <button xokay autofocus ng-disabled="!controller.canSave()" />
       <button ui-sref='^' xcancel />
     </xpart>
   </xdialog>

@@ -97,14 +97,17 @@ module EMD.Editor {
      * Download the file
      */
     downloadFile() {
-//      var doc = new EMD.Document();
-//      var html = this.markdownEditor.save(doc);
-//
-//      var href = "data:text/html," + html.innerHTML;
-//
-//      this.scope.$broadcast('download', {
-//        downloadData: href
-//      })
+
+      var doc = this.editApp.documents.current.document;
+
+      // add the content/rendered
+      doc.parts.set('body', this.markdownEditor.session.getValue());
+      doc.renderedHtml = this.markdownEditor.renderElement.html();
+
+      var text = EmbeddedMarkdown.toString(doc);
+
+      var blob = new Blob([text], {type: "text/html;charset=utf-8"});
+      (<any>window).saveAs(blob, "document.emd.html");
     }
 
     /**
