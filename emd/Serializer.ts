@@ -109,12 +109,12 @@ module EmbeddedMarkdown {
               {
                 tag: "DIV",
                 $id: "-emd-rendered",
-                html: ""
+                html: doc.renderedHtml
               },
               {
                 tag: "DIV",
                 $id: "-emd-document",
-                $style: "display: none",
+                $style: "display: none;",
                 children: [
                   {
                     tag: "DIV",
@@ -209,7 +209,7 @@ module EmbeddedMarkdown {
 '      **\n'+
 '    div\n' +
 '      @id="-emd-document"\n' +
-'      @style="display: none"\n' +
+'      @style="display: none;"\n' +
 '      div\n' +
 '        @id="-emd-content"\n' +
 '        script\n' +
