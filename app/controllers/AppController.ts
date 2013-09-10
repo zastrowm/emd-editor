@@ -90,7 +90,6 @@ module EMD.Editor {
         this.editApp.documents.load(file);
         this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
       }
-
     }
 
     /**
