@@ -236,6 +236,11 @@ var Application;
                 function TextFile(key) {
                     this.key = key;
                     this.name = key.substr(FileSystem.filePrefix.length);
+
+                    this.metadata = {
+                        size: this.exists() ? this.load().length : 0,
+                        lastEdited: new Date()
+                    };
                 }
                 /* Interface Implementation */
                 TextFile.prototype.save = function (content) {
@@ -1764,30 +1769,30 @@ var EMD;
             // Now set up the states
             var state = $stateProvider;
 
+            var put = function (stateName, url, templateUrl) {
+                if (templateUrl == null) {
+                    templateUrl = "views/" + stateName + ".html";
+                }
+
+                state = state.state(stateName, {
+                    url: url,
+                    templateUrl: templateUrl
+                });
+            };
+
             state = state.state('edit', {
                 url: '/edit',
                 template: ""
             });
 
-            state = state.state('images', {
-                url: "/images",
-                templateUrl: "views/images.html"
-            });
+            // images
+            put("images", "/images");
+            put("images.edit", "/edit/:id");
+            put("images.edit.rename", "/rename");
+            put("images.edit.delete", "/delete");
 
-            state = state.state('images.edit', {
-                url: "/edit/:id",
-                templateUrl: "views/images.edit.html"
-            });
-
-            state = state.state('images.edit.rename', {
-                url: "/rename",
-                templateUrl: "views/images.edit.rename.html"
-            });
-
-            state = state.state('images.edit.delete', {
-                url: "/delete",
-                templateUrl: "views/images.edit.delete.html"
-            });
+            // files
+            put("files", "/files", "views/files.open.html");
         });
     })(EMD.Editor || (EMD.Editor = {}));
     var Editor = EMD.Editor;
@@ -3082,9 +3087,7 @@ var EMD;
                     $scope.showPanel = !$state.includes('edit');
                 });
 
-                var lastFile = this.fileSystem.getRootDirectory().getFile("session");
                 this.loadSession();
-                //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
             }
             AppController.prototype.saveSession = function () {
                 var doc = this.editApp.documents.current.document;
@@ -3101,11 +3104,17 @@ var EMD;
             AppController.prototype.loadSession = function () {
                 var file = this.fileSystem.getRootDirectory().getFile("session");
 
-                if (file == null || !file.exists()) {
-                    this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(new EmbeddedMarkdown.EmdDocument());
-                } else {
-                    this.editApp.documents.load(file);
-                    this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
+                this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(new EmbeddedMarkdown.EmdDocument());
+
+                try  {
+                    if (file == null || !file.exists()) {
+                        this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(new EmbeddedMarkdown.EmdDocument());
+                    } else {
+                        this.editApp.documents.load(file);
+                        this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
+                    }
+                } catch (e) {
+                    console.log("Error:" + e);
                 }
             };
 
@@ -3704,6 +3713,61 @@ var EmbeddedMarkdown;
             return ImageDeleteController;
         })(Editor.Controller);
         Editor.ImageDeleteController = ImageDeleteController;
+    })(EmbeddedMarkdown.Editor || (EmbeddedMarkdown.Editor = {}));
+    var Editor = EmbeddedMarkdown.Editor;
+})(EmbeddedMarkdown || (EmbeddedMarkdown = {}));
+var EmbeddedMarkdown;
+(function (EmbeddedMarkdown) {
+    ///<reference path="zController.ts" />
+    ///<reference path="../application/files/FileSystem.ts" />
+    (function (Editor) {
+        var fs = Application.Files;
+
+        /**
+        * Handles the user opening a file
+        */
+        var FilesOpenController = (function (_super) {
+            __extends(FilesOpenController, _super);
+            function FilesOpenController($scope) {
+                _super.call(this, $scope);
+                this.files = [];
+
+                var allFiles = fs.FileSystems.allRegistered()[0].system.getRootDirectory().getFiles();
+                this.files = allFiles;
+                this.path = ["$browser", "/"];
+            }
+            FilesOpenController.prototype.onClick = function (file) {
+                this.currentFile = file;
+            };
+
+            FilesOpenController.prototype.onOkay = function () {
+                alert('leaving');
+            };
+
+            FilesOpenController.prototype.isToday = function (date) {
+                var today = new Date();
+                return today.getDate() == date.getDate() && today.getMonth() == date.getMonth() && today.getFullYear() == date.getFullYear();
+            };
+
+            FilesOpenController.prototype.formatFileSize = function (num) {
+                if (num < 1024) {
+                    return this.format(num, "b");
+                } else if (num < 1024 * 1024) {
+                    return this.format(num / (1024), "kb");
+                } else {
+                    return this.format(num / (1024 * 1024), "mb");
+                }
+            };
+
+            FilesOpenController.prototype.navigate = function (index) {
+            };
+
+            FilesOpenController.prototype.format = function (num, postfix) {
+                return (Math.round(num * 10) / 10) + " " + postfix;
+            };
+            return FilesOpenController;
+        })(Editor.Controller);
+        Editor.FilesOpenController = FilesOpenController;
     })(EmbeddedMarkdown.Editor || (EmbeddedMarkdown.Editor = {}));
     var Editor = EmbeddedMarkdown.Editor;
 })(EmbeddedMarkdown || (EmbeddedMarkdown = {}));

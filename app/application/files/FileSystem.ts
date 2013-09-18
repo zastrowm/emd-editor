@@ -121,6 +121,11 @@ module Application.Files {
      * Delete the file
      */
     delete();
+
+    /**
+     * The metadata associated with the document
+     */
+    metadata: IFileMetadata;
   }
 
   /**
@@ -147,6 +152,27 @@ module Application.Files {
      * Gets the file with the designated name
      */
     getFile(name: string): ITextFile
+  }
+
+  /**
+   * Data describing a document
+   */
+  export interface IFileMetadata {
+
+    /**
+     * The last time the file was modified
+     */
+    date?: Date;
+
+    /**
+     * The size (in bytes) of the file
+     */
+    size?: number;
+
+    /**
+     * The last time the file was edited
+     */
+    lastEdited?: Date;
   }
 
 }

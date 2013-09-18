@@ -2,7 +2,7 @@ body,
 #app,
 #body {
   background-color: #333;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Open Sans', sans-serif !important;
 }
 #body {
   position: absolute;
@@ -231,6 +231,11 @@ body,
   text-align: right;
   vertical-align: middle;
 }
+.panel-view > div.panel-container > div.panel > div.content-container > div.footer .message {
+  padding-top: 1em;
+  float: left;
+  text-align: left;
+}
 .panel-view > div.panel-container > div.panel > div.content-container > div.footer .btn {
   margin: 6px 5px;
   min-width: 80px;
@@ -421,4 +426,78 @@ body.drag #drag-fileLoad {
 #image-rename input {
   display: inline-block;
   vertical-align: middle;
+}
+.files {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.files ul.breadcrumb a {
+  cursor: pointer;
+}
+.files ul.listing {
+  list-style: none;
+  margin: 1em 1em;
+}
+.files ul.listing > li {
+  display: table;
+  table-layout: fixed;
+  padding: 5px 5px;
+  box-sizing: border-box;
+  width: 100%;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
+.files ul.listing > li.header {
+  padding: 8px;
+  font-weight: bold;
+  background-color: black;
+  font-size: 1.2em;
+  color: white;
+}
+.files ul.listing > li.header .name {
+  padding-left: 0px;
+}
+.files ul.listing > li > span {
+  position: relative;
+  display: table-row;
+}
+.files ul.listing > li > span span {
+  display: table-cell;
+}
+.files ul.listing > li > span .name {
+  padding-left: 10px;
+}
+.files ul.listing > li > span .size {
+  text-align: center;
+  width: 80px;
+}
+.files ul.listing > li > span .lastedit {
+  width: 120px;
+  text-align: center;
+}
+.files ul.listing > li > span .lastedit.isToday .day {
+  display: none;
+}
+.files ul.listing > li > span .lastedit.isToday .time {
+  display: inline;
+}
+.files ul.listing > li > span .lastedit .day {
+  display: inline;
+}
+.files ul.listing > li > span .lastedit .time {
+  display: none;
+}
+.files ul.listing > li.file:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+.files ul.listing > li.file.selected {
+  background-color: rgba(255, 255, 255, 0.2);
 }

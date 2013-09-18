@@ -87,6 +87,9 @@ module Application.Files.LocalStorage {
     /* Interface Implementation */
     public name: string;
 
+    /* Interface Implementation */
+    public metadata: fs.IFileMetadata;
+
     /**
      * Create a new text file
      * @param key the key associated with the file (the name is derivied by subtracting
@@ -94,6 +97,11 @@ module Application.Files.LocalStorage {
      */
     constructor(private key: string) {
       this.name = key.substr(FileSystem.filePrefix.length);
+
+      this.metadata = {
+        size: this.exists() ? this.load().length : 0,
+        lastEdited: new Date()
+      };
     }
 
     /* Interface Implementation */

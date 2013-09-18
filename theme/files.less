@@ -1,0 +1,86 @@
+
+@import "shared";
+
+.files {
+
+  .selectNone();
+
+  ul.breadcrumb {
+    a {
+      cursor: pointer;
+    }
+  }
+
+  ul.listing {
+    list-style: none;
+    margin: 1em 1em;
+
+    > li {
+
+      display: table;
+      table-layout: fixed;
+      padding: 5px 5px;
+      box-sizing: border-box;
+      width: 100%;
+
+      &.header {
+        padding: 8px;
+        font-weight: bold;
+        background-color: black;
+        font-size: 1.2em;
+        color:white;
+
+        .name {
+          padding-left: 0px;
+        }
+      }
+
+      > span {
+        position: relative;
+        display: table-row;
+
+        span {
+          display: table-cell;
+        }
+
+        .name {
+          padding-left: 10px;
+        }
+
+        .size {
+          text-align: center;
+          width: 80px;
+        }
+
+        .lastedit {
+
+          &.isToday {
+            .day { display: none; }
+            .time { display: inline; }
+          }
+
+          .day { display: inline; }
+          .time { display: none; }
+
+          width: 120px;
+          text-align: center;
+        }
+      }
+
+      .rounded-corners(5px);
+
+      &.file {
+        &:hover {
+          background-color: @hoverBack;
+          cursor: pointer;
+        }
+
+        &.selected {
+          background-color: @selectedBack;
+        }
+      }
+    }
+
+  }
+
+}
