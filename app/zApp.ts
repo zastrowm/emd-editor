@@ -17,5 +17,6 @@
 ///<reference path="controllers/ImageEditController.ts" />
 ///<reference path="controllers/ImageRenameController.ts" />
 ///<reference path="controllers/ImageDeleteController.ts" />
+///<reference path="controllers/FilesOpenController.ts" />
 
 

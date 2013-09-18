@@ -61,10 +61,7 @@ module EMD.Editor {
         $scope.showPanel = !$state.includes('edit');
       })
 
-      var lastFile = this.fileSystem.getRootDirectory().getFile("session");
       this.loadSession();
-
-      //new DragDropHelper(document.body, (evt) => this.handleDrop(evt));
     }
 
     public saveSession() {
@@ -82,14 +79,24 @@ module EMD.Editor {
     public loadSession() {
       var file = this.fileSystem.getRootDirectory().getFile("session");
 
-      if (file == null || !file.exists()) {
-        this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(
+      this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(
           new EmbeddedMarkdown.EmdDocument()
-        );
-      } else {
-        this.editApp.documents.load(file);
-        this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
+      );
+
+      try {
+        if (file == null || !file.exists()) {
+          this.editApp.documents.current = new EmbeddedMarkdown.Editor.DocumentWrapper(
+              new EmbeddedMarkdown.EmdDocument()
+          );
+        } else {
+          this.editApp.documents.load(file);
+          this.editor.session.setValue(this.editApp.documents.current.document.parts.get('body'));
+        }
+      } catch (e) {
+        console.log("Error:" + e);
       }
+
+
     }
 
     /**

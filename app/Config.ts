@@ -33,30 +33,32 @@ module EMD.Editor {
     // Now set up the states
     var state: any = $stateProvider;
 
+    var put = (stateName: string, url: string, templateUrl?: string) => {
+
+      if (templateUrl == null) {
+        templateUrl = "views/" + stateName + ".html";
+      }
+
+      state = state.state(stateName, {
+        url: url,
+        templateUrl: templateUrl
+      });
+    }
+
+
     state = state.state('edit', {
       url: '/edit',
       template: ""
     });
 
-    state = state.state('images', {
-      url: "/images",
-      templateUrl: "views/images.html"
-    });
+    // images
+    put("images", "/images");
+    put("images.edit", "/edit/:id");
+    put("images.edit.rename", "/rename");
+    put("images.edit.delete", "/delete");
 
-    state = state.state('images.edit', {
-      url: "/edit/:id",
-      templateUrl: "views/images.edit.html"
-    });
-
-    state = state.state('images.edit.rename', {
-      url: "/rename",
-      templateUrl: "views/images.edit.rename.html"
-    });
-
-    state = state.state('images.edit.delete', {
-      url: "/delete",
-      templateUrl: "views/images.edit.delete.html"
-    });
+    // files
+    put("files", "/files", "views/files.open.html");
   })
 
 
