@@ -17,5 +17,32 @@
   border-radius: @radius;
 }
 
+.rounded-corners (@top, @right, @bottom: @top, @left: @right) {
+  -webkit-border-radius: @top @right @bottom @right;
+  -moz-border-radius:  @top @right @bottom @right;
+  -ms-border-radius:  @top @right @bottom @right;
+  -o-border-radius:  @top @right @bottom @right;
+  border-radius:  @top @right @bottom @right;
+}
+
+.reset(@element) {
+  padding: 0px;
+  margin: 0px;
+}
+
+.reset(@element) when (@element = ul) {
+  list-style: none;
+  list-style-image: none;
+}
+
+.noselect() {
+  .selectNone();
+}
+
+.pointer() {
+  .noselect();
+  cursor: pointer;
+}
+
 @hoverBack: rgba(255, 255, 255, 0.10);
 @selectedBack:  rgba(255, 255, 255, 0.20);

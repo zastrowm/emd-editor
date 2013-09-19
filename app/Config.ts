@@ -58,7 +58,7 @@ module EMD.Editor {
     put("images.edit.delete", "/delete");
 
     // files
-    put("files", "/files", "views/files.open.html");
+    put("open", "/open", "views/open.html");
   })
 
 

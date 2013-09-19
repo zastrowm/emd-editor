@@ -1,8 +1,48 @@
+::-webkit-scrollbar {
+  height: 16px;
+  overflow: visible;
+  width: 16px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.5);
+  background-clip: padding-box;
+  border: solid transparent;
+  border-width: 1px 1px 1px 6px;
+  min-height: 28px;
+  padding: 100px 0 0;
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.07);
+}
+::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+::-webkit-scrollbar-track {
+  background-clip: padding-box;
+  border: solid transparent;
+  border-width: 0 0 0 4px;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
 body,
 #app,
 #body {
   background-color: #333;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: 'Tahoma', sans-serif;
+}
+body h1,
+#app h1,
+#body h1,
+body h2,
+#app h2,
+#body h2,
+body h3,
+#app h3,
+#body h3,
+body h4,
+#app h4,
+#body h4 {
+  font-weight: normal;
 }
 #body {
   position: absolute;
@@ -438,61 +478,92 @@ body.drag #drag-fileLoad {
 .files ul.breadcrumb a {
   cursor: pointer;
 }
-.files ul.listing {
+.files ul.type {
+  padding: 0px;
+  margin: 0px;
   list-style: none;
-  margin: 1em 1em;
+  list-style-image: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  margin-top: 50px;
+  margin-left: 10px;
+  float: left;
+  display: table;
+}
+.files ul.type li {
+  display: table-row;
+}
+.files ul.type li span {
+  -webkit-border-radius: 4px 0px 0px 4px;
+  -moz-border-radius: 4px 0px 0px 4px;
+  -ms-border-radius: 4px 0px 0px 4px;
+  -o-border-radius: 4px 0px 0px 4px;
+  border-radius: 4px 0px 0px 4px;
+  display: table-cell;
+  padding: 10px 16px 10px 16px;
+  text-align: right;
+  font-size: 1.2em;
+}
+.files ul.type li span:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+.files ul.type li span.selected {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #666 transparent #666 #666;
+  background-color: #2f2f2f;
+  position: relative;
+  left: 1px;
+  z-index: 100;
+}
+.files .tab-contents {
+  border-left: solid 1px #666;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+.files .tab-contents .listing-container {
+  position: absolute;
+  left: 12px;
+  right: 0px;
+  top: 2.2em;
+  bottom: 0px;
+}
+.files div.heading {
+  table-layout: fixed;
+  padding: 8px;
+  background-color: black;
+  font-size: 1.2em;
+  color: white;
+}
+.files div.heading > span > span.name {
+  padding-left: 15px;
+}
+.files div.heading .pad {
+  width: 16px;
+}
+.files ul.listing {
+  padding: 0px;
+  margin: 0px;
+  list-style: none;
+  list-style-image: none;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
 }
 .files ul.listing > li {
-  display: table;
-  table-layout: fixed;
-  padding: 5px 5px;
-  box-sizing: border-box;
-  width: 100%;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
   border-radius: 5px;
-}
-.files ul.listing > li.header {
-  padding: 8px;
-  font-weight: bold;
-  background-color: black;
-  font-size: 1.2em;
-  color: white;
-}
-.files ul.listing > li.header .name {
-  padding-left: 0px;
-}
-.files ul.listing > li > span {
-  position: relative;
-  display: table-row;
-}
-.files ul.listing > li > span span {
-  display: table-cell;
-}
-.files ul.listing > li > span .name {
-  padding-left: 10px;
-}
-.files ul.listing > li > span .size {
-  text-align: center;
-  width: 80px;
-}
-.files ul.listing > li > span .lastedit {
-  width: 120px;
-  text-align: center;
-}
-.files ul.listing > li > span .lastedit.isToday .day {
-  display: none;
-}
-.files ul.listing > li > span .lastedit.isToday .time {
-  display: inline;
-}
-.files ul.listing > li > span .lastedit .day {
-  display: inline;
-}
-.files ul.listing > li > span .lastedit .time {
-  display: none;
 }
 .files ul.listing > li.file:hover {
   background-color: rgba(255, 255, 255, 0.1);
@@ -500,4 +571,52 @@ body.drag #drag-fileLoad {
 }
 .files ul.listing > li.file.selected {
   background-color: rgba(255, 255, 255, 0.2);
+}
+.files ul.listing > li,
+.files div.heading {
+  display: table;
+  table-layout: fixed;
+  padding: 5px 5px;
+  box-sizing: border-box;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.files ul.listing > li > span,
+.files div.heading > span {
+  position: relative;
+  display: table-row;
+}
+.files ul.listing > li > span span,
+.files div.heading > span span {
+  display: table-cell;
+}
+.files ul.listing > li > span .name,
+.files div.heading > span .name {
+  padding-left: 10px;
+}
+.files ul.listing > li > span .size,
+.files div.heading > span .size {
+  text-align: center;
+  width: 80px;
+}
+.files ul.listing > li > span .lastedit,
+.files div.heading > span .lastedit {
+  width: 120px;
+  text-align: center;
+}
+.files ul.listing > li > span .lastedit.isToday .day,
+.files div.heading > span .lastedit.isToday .day {
+  display: none;
+}
+.files ul.listing > li > span .lastedit.isToday .time,
+.files div.heading > span .lastedit.isToday .time {
+  display: inline;
+}
+.files ul.listing > li > span .lastedit .day,
+.files div.heading > span .lastedit .day {
+  display: inline;
+}
+.files ul.listing > li > span .lastedit .time,
+.files div.heading > span .lastedit .time {
+  display: none;
 }
