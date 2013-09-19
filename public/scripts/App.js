@@ -1792,7 +1792,7 @@ var EMD;
             put("images.edit.delete", "/delete");
 
             // files
-            put("files", "/files", "views/files.open.html");
+            put("open", "/open", "views/open.html");
         });
     })(EMD.Editor || (EMD.Editor = {}));
     var Editor = EMD.Editor;
@@ -3405,11 +3405,14 @@ var EMD;
 
                 var menu = new Menu();
                 var fileMenu = menu.addMenu("File");
-                fileMenu.addChild("Download", function () {
-                    return _this.download();
+                fileMenu.addChild("Open", function () {
+                    return _this.goto("open");
                 });
                 fileMenu.addChild("Save", function () {
                     return _this.save();
+                });
+                fileMenu.addChild("Download", function () {
+                    return _this.download();
                 });
 
                 var editMenu = menu.addMenu("Edit");

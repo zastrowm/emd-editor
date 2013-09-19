@@ -23,8 +23,9 @@ module EMD.Editor {
 
       var menu = new Menu();
       var fileMenu = menu.addMenu("File");
-      fileMenu.addChild("Download", () => this.download());
+      fileMenu.addChild("Open", () => this.goto("open"));
       fileMenu.addChild("Save", () => this.save());
+      fileMenu.addChild("Download", () => this.download());
 
       var editMenu = menu.addMenu("Edit");
       editMenu.addChild("Undo", () => this.undo(true));
