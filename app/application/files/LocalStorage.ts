@@ -14,7 +14,12 @@ module Application.Files.LocalStorage {
     /**
      * All key names starting with "file-" are considered to be files
      */
-    public static filePrefix = "file-";
+    public static filePrefix = "file/";
+
+    /**
+     * All key names starting with "meta-" are considered to be metadata
+     */
+    public static metaPrefix = "meta/";
 
     /**
      * The name of the root directory is, '/'
@@ -65,8 +70,9 @@ module Application.Files.LocalStorage {
 
       for (var i = 0; i < localStorage.length; i++){
         var key = localStorage.key(i);
-        if (key.indexOf(FileSystem.filePrefix) == 0) {
-          files.push(new TextFile(key));
+        if (key.indexOf(FileSystem.metaPrefix) == 0) {
+          var name = key.substr(FileSystem.metaPrefix.length);
+          files.push(new TextFile(name));
         }
       }
 
@@ -75,7 +81,7 @@ module Application.Files.LocalStorage {
 
     /* Interface Implementation */
     getFile(name: string): fs.ITextFile {
-      return new TextFile(FileSystem.filePrefix + name);
+      return new TextFile(name);
     }
   }
 
@@ -85,38 +91,45 @@ module Application.Files.LocalStorage {
   class TextFile implements fs.ITextFile {
 
     /* Interface Implementation */
-    public name: string;
-
-    /* Interface Implementation */
     public metadata: fs.IFileMetadata;
 
     /**
      * Create a new text file
-     * @param key the key associated with the file (the name is derivied by subtracting
+     * @param key the key associated with the file (the name is derived by subtracting
      * the common prefix
      */
-    constructor(private key: string) {
-      this.name = key.substr(FileSystem.filePrefix.length);
+    constructor(public name: string) {
 
-      this.metadata = {
-        size: this.exists() ? this.load().length : 0,
-        lastEdited: new Date()
-      };
+      if (this.exists()) {
+        var metadata = JSON.parse(localStorage.getItem(this.keyMeta()));
+        metadata.lastEdited = new Date(Date.parse(metadata.lastEdited));
+        this.metadata = metadata;
+
+      } else {
+        this.metadata = {};
+      }
     }
 
     /* Interface Implementation */
     save(content: string) {
-      localStorage.setItem(this.key, content);
+
+      var metadata = JSON.stringify({
+        size: content.length,
+        lastEdited: new Date()
+      });
+
+      localStorage.setItem(this.keyFile(), content);
+      localStorage.setItem(this.keyMeta(), metadata);
     }
 
     /* Interface Implementation */
     load(): string {
-      return localStorage.getItem(this.key);
+      return localStorage.getItem(this.keyFile());
     }
 
     /* Interface Implementation */
     rename(name: string): fs.ITextFile {
-      var otherFile = new TextFile(FileSystem.filePrefix + name);
+      var otherFile = new TextFile(name);
       if (otherFile.exists()) {
         throw new Error("Cannot override file!");
       }
@@ -130,12 +143,21 @@ module Application.Files.LocalStorage {
 
     /* Interface Implementation */
     exists(): boolean {
-      return localStorage.getItem(this.key);
+      return localStorage.getItem(this.keyMeta());
     }
 
     /* Interface Implementation */
     delete(): void {
-      localStorage.removeItem(this.key);
+      localStorage.removeItem(this.keyFile());
+      localStorage.removeItem(this.keyMeta());
+    }
+
+    private keyFile(): string {
+      return FileSystem.filePrefix + this.name;
+    }
+
+    private keyMeta(): string {
+      return FileSystem.metaPrefix + this.name;
     }
   }
 

@@ -10,7 +10,6 @@ module EmbeddedMarkdown.Editor {
    */
   export class FilesOpenController extends Controller {
 
-
     public files: fs.ITextFile[] = [];
     public currentFile: fs.ITextFile;
 
@@ -36,13 +35,21 @@ module EmbeddedMarkdown.Editor {
     }
 
     public isToday(date: Date): boolean {
+
+      if (date == null)
+        return false;
+
       var today = new Date();
       return today.getDate() == date.getDate()
           && today.getMonth() == date.getMonth()
           && today.getFullYear() == date.getFullYear();
     }
 
-    public formatFileSize(num: number) {
+    public formatFileSize(num: number): string {
+
+      if (num == null)
+        return "-";
+
       if (num < 1024) {
         return this.format(num, "b");
       } else if (num < 1024 * 1024) {

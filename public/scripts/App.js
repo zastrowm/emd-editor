@@ -207,8 +207,9 @@ var Application;
 
                     for (var i = 0; i < localStorage.length; i++) {
                         var key = localStorage.key(i);
-                        if (key.indexOf(FileSystem.filePrefix) == 0) {
-                            files.push(new TextFile(key));
+                        if (key.indexOf(FileSystem.metaPrefix) == 0) {
+                            var name = key.substr(FileSystem.metaPrefix.length);
+                            files.push(new TextFile(name));
                         }
                     }
 
@@ -217,9 +218,11 @@ var Application;
 
                 /* Interface Implementation */
                 FileSystem.prototype.getFile = function (name) {
-                    return new TextFile(FileSystem.filePrefix + name);
+                    return new TextFile(name);
                 };
-                FileSystem.filePrefix = "file-";
+                FileSystem.filePrefix = "file/";
+
+                FileSystem.metaPrefix = "meta/";
                 return FileSystem;
             })();
             LocalStorage.FileSystem = FileSystem;
@@ -230,31 +233,38 @@ var Application;
             var TextFile = (function () {
                 /**
                 * Create a new text file
-                * @param key the key associated with the file (the name is derivied by subtracting
+                * @param key the key associated with the file (the name is derived by subtracting
                 * the common prefix
                 */
-                function TextFile(key) {
-                    this.key = key;
-                    this.name = key.substr(FileSystem.filePrefix.length);
-
-                    this.metadata = {
-                        size: this.exists() ? this.load().length : 0,
-                        lastEdited: new Date()
-                    };
+                function TextFile(name) {
+                    this.name = name;
+                    if (this.exists()) {
+                        var metadata = JSON.parse(localStorage.getItem(this.keyMeta()));
+                        metadata.lastEdited = new Date(Date.parse(metadata.lastEdited));
+                        this.metadata = metadata;
+                    } else {
+                        this.metadata = {};
+                    }
                 }
                 /* Interface Implementation */
                 TextFile.prototype.save = function (content) {
-                    localStorage.setItem(this.key, content);
+                    var metadata = JSON.stringify({
+                        size: content.length,
+                        lastEdited: new Date()
+                    });
+
+                    localStorage.setItem(this.keyFile(), content);
+                    localStorage.setItem(this.keyMeta(), metadata);
                 };
 
                 /* Interface Implementation */
                 TextFile.prototype.load = function () {
-                    return localStorage.getItem(this.key);
+                    return localStorage.getItem(this.keyFile());
                 };
 
                 /* Interface Implementation */
                 TextFile.prototype.rename = function (name) {
-                    var otherFile = new TextFile(FileSystem.filePrefix + name);
+                    var otherFile = new TextFile(name);
                     if (otherFile.exists()) {
                         throw new Error("Cannot override file!");
                     }
@@ -268,12 +278,21 @@ var Application;
 
                 /* Interface Implementation */
                 TextFile.prototype.exists = function () {
-                    return localStorage.getItem(this.key);
+                    return localStorage.getItem(this.keyMeta());
                 };
 
                 /* Interface Implementation */
                 TextFile.prototype.delete = function () {
-                    localStorage.removeItem(this.key);
+                    localStorage.removeItem(this.keyFile());
+                    localStorage.removeItem(this.keyMeta());
+                };
+
+                TextFile.prototype.keyFile = function () {
+                    return FileSystem.filePrefix + this.name;
+                };
+
+                TextFile.prototype.keyMeta = function () {
+                    return FileSystem.metaPrefix + this.name;
                 };
                 return TextFile;
             })();
@@ -1728,6 +1747,10 @@ var EmbeddedMarkdown;
                 if (typeof toParams === "undefined") { toParams = {}; }
                 this.$state.go(actionName, toParams);
             };
+
+            ActionsService.prototype.current = function () {
+                return this.$state.current;
+            };
             return ActionsService;
         })();
         Editor.ActionsService = ActionsService;
@@ -1763,7 +1786,7 @@ var EMD;
         Editor.emdEditorModule.config(function ($stateProvider, $urlRouterProvider) {
             //
             // For any unmatched url, send to /
-            $urlRouterProvider.otherwise("");
+            $urlRouterProvider.otherwise("edit");
 
             //
             // Now set up the states
@@ -3748,11 +3771,17 @@ var EmbeddedMarkdown;
             };
 
             FilesOpenController.prototype.isToday = function (date) {
+                if (date == null)
+                    return false;
+
                 var today = new Date();
                 return today.getDate() == date.getDate() && today.getMonth() == date.getMonth() && today.getFullYear() == date.getFullYear();
             };
 
             FilesOpenController.prototype.formatFileSize = function (num) {
+                if (num == null)
+                    return "-";
+
                 if (num < 1024) {
                     return this.format(num, "b");
                 } else if (num < 1024 * 1024) {

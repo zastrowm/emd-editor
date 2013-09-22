@@ -11,6 +11,10 @@ module EmbeddedMarkdown.Editor {
       this.$state.go(actionName, toParams);
     }
 
+    current(): any {
+      return this.$state.current;
+    }
+
 
   }
 

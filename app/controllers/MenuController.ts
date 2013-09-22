@@ -17,6 +17,9 @@ module EMD.Editor {
      * @param $scope the scope for which the controller is active
      */
     constructor($scope: any, $state: any) {
+
+
+
       this.appController = <AppController>(<any>$scope.$parent).controller;
       this.scope = $scope;
       this.$state = $state;
