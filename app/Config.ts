@@ -28,7 +28,7 @@ module EMD.Editor {
   emdEditorModule.config(function($stateProvider, $urlRouterProvider){
     //
     // For any unmatched url, send to /
-    $urlRouterProvider.otherwise("")
+    $urlRouterProvider.otherwise("edit")
     //
     // Now set up the states
     var state: any = $stateProvider;

@@ -31,8 +31,8 @@
                 <span class="name">{{file.name}}</span>
                 <span class="lastedit"
                       ng-class="{isToday: controller.isToday(file.metadata.lastEdited)}">
-                  <span class="day">{{file.metadata.lastEdited | date:"dd MMM yyyy"}}</span>
-                  <span class="time"> {{file.metadata.lastEdited | date:'h:mm a'}}</span>
+                  <span class="day">{{(file.metadata.lastEdited | date:"dd MMM yyyy") || "-"}}</span>
+                  <span class="time"> {{(file.metadata.lastEdited | date:'h:mm a') || "-"}}</span>
                 </span>
                 <span class="size">{{controller.formatFileSize(file.metadata.size)}}</span>
               </span>

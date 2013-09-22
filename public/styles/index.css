@@ -74,16 +74,17 @@ body h4,
 #menu > ul > li {
   display: inline-block;
   position: relative;
+  font-size: 1em;
 }
 #menu > ul > li > a {
   display: inline-block;
-  padding: 5px 10px 5px 10px;
+  padding: 2px 5px 2px 5px;
   color: #c6c6c6;
 }
 #menu > ul li > ul {
   display: none;
   position: absolute;
-  top: 30px;
+  top: 23px;
   left: 5px;
   background-color: white;
   color: black;
@@ -112,17 +113,9 @@ body h4,
   list-style: none;
   list-style-image: none;
 }
-.ace_editor,
-.editor {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
-  border-radius: 5px;
-}
 #app {
   position: absolute;
-  top: 30px;
+  top: 26px;
   bottom: 25px;
   left: 5px;
   right: 5px;
@@ -211,11 +204,6 @@ body h4,
   left: 2em;
   top: 2em;
   bottom: 2em;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
 }
 .panel-view > div.panel-container > div.panel {
   height: 100%;
@@ -428,11 +416,6 @@ body.drag #drag-fileLoad {
 #panel-images .image img {
   max-width: 400px;
   max-height: 200px;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  -ms-border-radius: 10px;
-  -o-border-radius: 10px;
-  border-radius: 10px;
 }
 #panel-images .images-container {
   width: 100%;
@@ -499,11 +482,6 @@ body.drag #drag-fileLoad {
   display: table-row;
 }
 .files ul.type li span {
-  -webkit-border-radius: 4px 0px 0px 4px;
-  -moz-border-radius: 4px 0px 0px 4px;
-  -ms-border-radius: 4px 0px 0px 4px;
-  -o-border-radius: 4px 0px 0px 4px;
-  border-radius: 4px 0px 0px 4px;
   display: table-cell;
   padding: 10px 16px 10px 16px;
   text-align: right;
@@ -557,13 +535,6 @@ body.drag #drag-fileLoad {
   overflow-x: hidden;
   overflow-y: scroll;
   width: 100%;
-}
-.files ul.listing > li {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
-  border-radius: 5px;
 }
 .files ul.listing > li.file:hover {
   background-color: rgba(255, 255, 255, 0.1);

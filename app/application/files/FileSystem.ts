@@ -160,11 +160,6 @@ module Application.Files {
   export interface IFileMetadata {
 
     /**
-     * The last time the file was modified
-     */
-    date?: Date;
-
-    /**
      * The size (in bytes) of the file
      */
     size?: number;
