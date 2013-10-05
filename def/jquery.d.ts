@@ -324,8 +324,8 @@ interface JQueryStatic {
     each(collection: JQuery, callback: (indexInArray: number, valueOfElement: HTMLElement) => any): any;
     each<T>(collection: T[], callback: (indexInArray: number, valueOfElement: T) => any): any;
 
-    extend(target: any, ...objs: any[]): Object;
-    extend(deep: boolean, target: any, ...objs: any[]): Object;
+    extend(target: any, ...objs: any[]): any;
+    extend(deep: boolean, target: any, ...objs: any[]): any;
 
     globalEval(code: string): any;
 
@@ -374,6 +374,9 @@ interface JQueryStatic {
     * @param keepScripts A Boolean indicating whether to include scripts passed in the HTML string
     */
     parseHTML(data: string, context?: HTMLElement, keepScripts?: boolean): any[];
+
+    Animation(elem: any, properties: any, options: any): any;
+
 }
 
 /*
@@ -488,7 +491,7 @@ interface JQuery {
     removeData(nameOrList?: any): JQuery;
 
     // Deferred
-    promise(type?: any, target?: any): JQueryPromise;
+    promise(type?: any, target?: any): JQueryPromise<any>;
 
     // Effects
     animate(properties: any, duration?: any, complete?: Function): JQuery;
@@ -771,6 +774,7 @@ interface JQuery {
 
     nextUntil(selector?: string, filter?: string): JQuery;
     nextUntil(element?: Element, filter?: string): JQuery;
+    nextUntil(obj?: JQuery, filter?: string): JQuery;
 
     not(selector: string): JQuery;
     not(func: (index: any) => any): JQuery;
@@ -785,6 +789,7 @@ interface JQuery {
 
     parentsUntil(selector?: string, filter?: string): JQuery;
     parentsUntil(element?: Element, filter?: string): JQuery;
+    parentsUntil(obj?: JQuery, filter?: string): JQuery;
 
     prev(selector?: string): JQuery;
 
@@ -792,6 +797,7 @@ interface JQuery {
 
     prevUntil(selector?: string, filter?: string): JQuery;
     prevUntil(element?: Element, filter?: string): JQuery;
+    prevUntil(obj?: JQuery, filter?: string): JQuery;
 
     siblings(selector?: string): JQuery;
 
@@ -803,6 +809,8 @@ interface JQuery {
     queue(queueName: string, newQueueOrCallback: any): JQuery;
     queue(newQueueOrCallback: any): JQuery;
 }
-
+declare module "jquery" {
+    export = $;
+}
 declare var jQuery: JQueryStatic;
 declare var $: JQueryStatic;

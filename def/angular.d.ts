@@ -32,8 +32,9 @@ declare module ng {
         bootstrap(element: string, modules?: any[]): auto.IInjectorService;
         bootstrap(element: JQuery, modules?: any[]): auto.IInjectorService;
         bootstrap(element: Element, modules?: any[]): auto.IInjectorService;
+        bootstrap(element: Document, modules?: any[]): auto.IInjectorService;
         copy(source: any, destination?: any): any;
-        element: JQueryStatic;
+        element: IAugmentedJQueryStatic;
         equals(value1: any, value2: any): boolean;
         extend(destination: any, ...sources: any[]): any;
         forEach(obj: any, iterator: (value: any, key: any) => any, context?: any): any;
@@ -138,6 +139,8 @@ declare module ng {
         $valid: boolean;
         $invalid: boolean;
         $error: any;
+        $setDirty(): void;
+        $setPristine(): void;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -205,10 +208,17 @@ declare module ng {
         $watch(watchExpression: string, listener?: (newValue: any, oldValue: any, scope: IScope) => any, objectEquality?: boolean): Function;
         $watch(watchExpression: (scope: IScope) => any, listener?: string, objectEquality?: boolean): Function;
         $watch(watchExpression: (scope: IScope) => any, listener?: (newValue: any, oldValue: any, scope: IScope) => any, objectEquality?: boolean): Function;
-        
+
+        $watchCollection(watchExpression: string, listener: (newValue: any, oldValue: any, scope: IScope) => any): Function;
+        $watchCollection(watchExpression: (scope: IScope) => any, listener: (newValue: any, oldValue: any, scope: IScope) => any): Function;
+
         $parent: IScope;
 
         $id: number;
+        
+        // Hidden members
+        $$isolateBindings: any;
+        $$phase: any;
     }
 
     interface IAngularEvent {
@@ -356,7 +366,7 @@ declare module ng {
         port(): number;
         protocol(): string;
         replace(): ILocationService;
-        search(): string;
+        search(): any;
         search(parametersMap: any): ILocationService;
         search(parameter: string, parameterValue: any): ILocationService;
         url(): string;
@@ -406,7 +416,9 @@ declare module ng {
     }
 
     interface IPromise<T> {
-        then(successCallback: (promiseValue: T) => any, errorCallback?: (reason: any) => any): IPromise<any>;
+        then<TResult>(successCallback: (promiseValue: T) => IHttpPromise<TResult>, errorCallback?: (reason: any) => any): IPromise<TResult>;
+        then<TResult>(successCallback: (promiseValue: T) => IPromise<TResult>, errorCallback?: (reason: any) => any): IPromise<TResult>;
+        then<TResult>(successCallback: (promiseValue: T) => TResult, errorCallback?: (reason: any) => TResult): IPromise<TResult>;
     }
 
     interface IDeferred<T> {
@@ -492,7 +504,7 @@ declare module ng {
         (controllerName: string, locals?: any): any;
     }
 
-    interface IControlerProvider extends IServiceProvider {
+    interface IControllerProvider extends IServiceProvider {
         register(name: string, controllerConstructor: Function): void;
         register(name: string, dependencyAnnotadedConstructor: any[]): void;
     }
@@ -503,21 +515,21 @@ declare module ng {
     ///////////////////////////////////////////////////////////////////////////
     interface IHttpService {
         // At least moethod and url must be provided...
-        (config: IRequestConfig): IHttpPromise;
-        get (url: string, RequestConfig?: any): IHttpPromise;
-        delete (url: string, RequestConfig?: any): IHttpPromise;
-        head(url: string, RequestConfig?: any): IHttpPromise;
-        jsonp(url: string, RequestConfig?: any): IHttpPromise;
-        post(url: string, data: any, RequestConfig?: any): IHttpPromise;
-        put(url: string, data: any, RequestConfig?: any): IHttpPromise;
+        (config: IRequestConfig): IHttpPromise<any>;
+        get (url: string, RequestConfig?: any): IHttpPromise<any>;
+        delete (url: string, RequestConfig?: any): IHttpPromise<any>;
+        head(url: string, RequestConfig?: any): IHttpPromise<any>;
+        jsonp(url: string, RequestConfig?: any): IHttpPromise<any>;
+        post(url: string, data: any, RequestConfig?: any): IHttpPromise<any>;
+        put(url: string, data: any, RequestConfig?: any): IHttpPromise<any>;
         defaults: IRequestConfig;
 
         // For debugging, BUT it is documented as public, so...
         pendingRequests: any[];
     }
 
-    // This is just for hinting.    
-    // Some opetions might not be available depending on the request. 
+    // This is just for hinting.
+    // Some opetions might not be available depending on the request.
     // see http://docs.angularjs.org/api/ng.$http#Usage for options explanations
     interface IRequestConfig {
         method: string;
@@ -538,7 +550,7 @@ declare module ng {
     }
 
     interface IHttpPromiseCallback<T> {
-        (data: T, status: number, headers: (headerName: string) => string, config: IRequestConfig): any;
+        (data: T, status: number, headers: (headerName: string) => string, config: IRequestConfig): void;
     }
 
     interface IHttpPromiseCallbackArg<T> {
@@ -549,13 +561,15 @@ declare module ng {
     }
 
     interface IHttpPromise<T> extends IPromise<T> {
-        success(callback: IHttpPromiseCallback<T>): IHttpPromise;
-        error(callback: IHttpPromiseCallback<T>): IHttpPromise;
-        then(successCallback: (response: IHttpPromiseCallbackArg<T>) => any, errorCallback?: (response: IHttpPromiseCallbackArg<T>) => any): IPromise<any>;
+        success(callback: IHttpPromiseCallback<T>): IHttpPromise<T>;
+        error(callback: IHttpPromiseCallback<T>): IHttpPromise<T>;
+        then<TResult>(successCallback: (response: IHttpPromiseCallbackArg<T>) => TResult, errorCallback?: (response: IHttpPromiseCallbackArg<T>) => any): IPromise<TResult>;
+        then<TResult>(successCallback: (response: IHttpPromiseCallbackArg<T>) => IPromise<TResult>, errorCallback?: (response: IHttpPromiseCallbackArg<T>) => any): IPromise<TResult>;
     }
 
     interface IHttpProvider extends IServiceProvider {
         defaults: IRequestConfig;
+        interceptors: any[];
         responseInterceptors: any[];
     }
 
@@ -665,6 +679,43 @@ declare module ng {
         scope?: any;
         link?: Function;
         compile?: Function;
+        controller?: Function;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // angular.element
+    // when calling angular.element, angular returns a jQuery object,
+    // augmented with additional methods like e.g. scope.
+    // see: http://docs.angularjs.org/api/angular.element
+    ///////////////////////////////////////////////////////////////////////////
+    interface IAugmentedJQueryStatic extends JQueryStatic {
+        (selector: string, context?: any): IAugmentedJQuery;
+        (element: Element): IAugmentedJQuery;
+        (object: {}): IAugmentedJQuery;
+        (elementArray: Element[]): IAugmentedJQuery;
+        (object: JQuery): IAugmentedJQuery;
+        (func: Function): IAugmentedJQuery;
+        (array: any[]): IAugmentedJQuery;
+        (): IAugmentedJQuery;
+    }
+
+    interface IAugmentedJQuery extends JQuery {
+        // TODO: events, how to define?
+        //$destroy
+
+        find(selector: string): IAugmentedJQuery;
+        find(element: any): IAugmentedJQuery;
+        find(obj: JQuery): IAugmentedJQuery;
+
+        controller(name: string): any;
+        injector(): any;
+        scope(): IScope;
+
+        inheritedData(key: string, value: any): JQuery;
+        inheritedData(obj: { [key: string]: any; }): JQuery;
+        inheritedData(key?: string): any;
+
+
     }
 
 

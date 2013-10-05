@@ -1,0 +1,56 @@
+<div class="backdrop files" ng-controller="EmbeddedMarkdown.Editor.FilesOpenController">
+  <xpanel>
+    <xpart as="header">
+      <button xclose />
+      <h2>Open File <small>select a file to open</small></h2>
+    </xpart>
+
+    <xpart as="body">
+      <ul class="type">
+        <li title="Not Yet Implemented"><span>Recent</span></li>
+        <li><span class="selected">Browser</span></li>
+        <li title="Not Yet Implemented"><span>Computer</span></li>
+      </ul>
+      <div class="tab-contents">
+        <div class="heading">
+          <span>
+            <span class="name">Name</span>
+            <span class="lastedit">Last Edited</span>
+            <span class="size">Size</span>
+            <span class="pad"></span>
+          </span>
+        </div>
+        <div class="listing-container">
+          <ul class="listing">
+            <li ng-repeat="file in controller.files"
+                ng-click="controller.onClick(file)"
+                ng-class="{selected: file == controller.currentFile}"
+                class="file"
+                tabindex="1">
+              <span>
+                <span class="name">{{file.name}}</span>
+                <span class="lastedit"
+                      ng-class="{isToday: controller.isToday(file.metadata.lastEdited)}">
+                  <span class="day">{{(file.metadata.lastEdited | date:"dd MMM yyyy") || "-"}}</span>
+                  <span class="time"> {{(file.metadata.lastEdited | date:'h:mm a') || "-"}}</span>
+                </span>
+                <span class="size">{{controller.formatFileSize(file.metadata.size)}}</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </xpart>
+
+    <xpart as="footer">
+      <span class="message">
+        <span class="label label-important">Note</span>
+        Browser storage is limited to a total of 5MB for all files
+      </span>
+      <button xokay text="Open"
+              ng-disabled="controller.currentFile == null" />
+      <button xcancel autofocus ui-sref="edit"  />
+    </xpart>
+  </xpanel>
+</div>
