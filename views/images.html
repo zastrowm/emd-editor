@@ -1,0 +1,44 @@
+<div class="backdrop"  ng-controller="EmbeddedMarkdown.Editor.ImagesController">
+  <xpanel id="panel-images" >
+      <xpart as="header">
+        <button xclose ui-sref="edit"/>
+        <h2>Images</h2>
+        <p>
+          Add images by dragging them into the panel.  Select an image to edit or remove it.
+        </p>
+      </xpart>
+
+      <xpart as="body">
+        <div class='images-container'
+             zdropzone
+             onfiledrop="controller.handleFileSelect(files)">
+          <div class='image'
+               tabindex="0"
+               ng-repeat="image in controller.images"
+               ng-click="controller.handleImageClick(image)">
+            <img ng-src="{{image.data}}" ng-alt="{{image.name}}" draggable="false"/>
+            <p class="name">
+              {{image.name}}
+              <span class="actions">
+                <xicon name="pencil"
+                       text="edit image"
+                       ng-click="controller.editImage(image); $event.stopPropagation();" />
+                <xicon name="remove"
+                       text="delete image"
+                       ng-click="controller.deleteImage(image); $event.stopPropagation();" />
+              </span>
+            </p>
+          </div>
+        </div>
+
+
+      </xpart>
+
+      <xpart as="footer">
+        <button class="btn-primary" xcancel autofocus />
+      </xpart>
+    <ui-view>
+
+    </ui-view>
+  </xpanel>
+</div>

@@ -6,22 +6,22 @@
   <title>Embedded Markdown Document Editor</title>
 
   <!-- Third Party References -->
-  <script src="resources/lib/scripts/jquery.min.js"></script>
-  <script src="resources/lib/scripts/bootstrap.min.js"></script>
-  <script src="resources/lib/scripts/MarkdownDeep.min.js"></script>
-  <script src="resources/lib/scripts/angular.min.js"></script>
-  <script src="resources/lib/scripts/angular-ui-router.min.js"></script>
-  <script src="resources/lib/scripts/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-  <script src="resources/lib/scripts/FileSaver.js" type="text/javascript" charset="utf-8"></script>
-  <script src="resources/lib/scripts/keymaster.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/scripts/jquery.min.js"></script>
+  <script src="lib/scripts/bootstrap.min.js"></script>
+  <script src="lib/scripts/MarkdownDeep.min.js"></script>
+  <script src="lib/scripts/angular.min.js"></script>
+  <script src="lib/scripts/angular-ui-router.min.js"></script>
+  <script src="lib/scripts/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/scripts/FileSaver.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/scripts/keymaster.min.js" type="text/javascript" charset="utf-8"></script>
 
-  <link href="resources/lib/styles/bootstrap.min.css" type="text/css" rel="stylesheet" />
-  <link href="resources/lib/styles/darkstrap.min.css" type="text/css" rel="stylesheet" />
-  <link href="resources/lib/font/style.css" type="text/css" rel="stylesheet" />
+  <link href="lib/styles/bootstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="lib/styles/darkstrap.min.css" type="text/css" rel="stylesheet" />
+  <link href="lib/font/style.css" type="text/css" rel="stylesheet" />
 
+  <link href="styles/index.css" type="text/css" rel="stylesheet" />
   <!-- First Party References -->
-  <link href="editor.css" type="text/css" rel="stylesheet" />
-  <script src="editor.js"></script>
+  <script src="scripts/App.js"></script>
 </head>
 <body ng-controller="EMD.Editor.AppController">
   <div id="body">
@@ -94,7 +94,7 @@
     editor.setTheme("ace/theme/twilight");
   </script>
   <iframe id="document-loader"></iframe>
-  <ng-include src="'resources/rendering/github.html'">
+  <ng-include src="'rendering/github.html'">
   </ng-include>
 
 

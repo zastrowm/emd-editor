@@ -1,3 +1,5 @@
 syntax: glob
 .idea/workspace.xml
 gen/*
+public/*
+node_modules/*
